@@ -1,5 +1,5 @@
+<?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <string name="app_name">Fit Li Route GPS</string>
     <string name="home_menu">Home</string>
     <string name="setting_menu">Setting</string>
     <string name="tracks">Tracks</string>
