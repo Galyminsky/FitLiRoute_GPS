@@ -2,7 +2,6 @@ package me.proton.jobforandroid.fitliroutegps
 
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
-import android.widget.Toast
 import me.proton.jobforandroid.fitliroutegps.databinding.ActivityMainBinding
 import me.proton.jobforandroid.fitliroutegps.fragments.MainFragment
 import me.proton.jobforandroid.fitliroutegps.fragments.SettingsFragment
@@ -32,7 +31,7 @@ class MainActivity : AppCompatActivity() {
                     openFragment(TracksFragment.newInstance())
                 }
                 R.id.setting_menu -> {
-                    openFragment(SettingsFragment.newInstance())
+                    openFragment(SettingsFragment())
                 }
             }
             true

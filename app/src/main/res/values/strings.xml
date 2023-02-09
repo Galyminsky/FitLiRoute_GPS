@@ -3,6 +3,10 @@
     <string name="home_menu">Home</string>
     <string name="setting_menu">Setting</string>
     <string name="tracks">Tracks</string>
+    <string name="update_time">Update Time</string>
+    <string name="update_time_summary">Location update time </string>
+    <string name="location">Location</string>
+
 
 
 </resources>

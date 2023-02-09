@@ -1,26 +1,12 @@
 package me.proton.jobforandroid.fitliroutegps.fragments
 
 import android.os.Bundle
-import android.view.LayoutInflater
-import android.view.View
-import android.view.ViewGroup
-import androidx.fragment.app.Fragment
-import me.proton.jobforandroid.fitliroutegps.databinding.FragmentSettingsBinding
+import androidx.preference.PreferenceFragmentCompat
+import me.proton.jobforandroid.fitliroutegps.R
 
-class SettingsFragment : Fragment() {
-
-    private lateinit var binding: FragmentSettingsBinding
-
-    override fun onCreateView(
-        inflater: LayoutInflater, container: ViewGroup?,
-        savedInstanceState: Bundle?
-    ): View? {
-        binding = FragmentSettingsBinding.inflate(inflater, container, false)
-        return binding.root
+class SettingsFragment : PreferenceFragmentCompat() {
+    override fun onCreatePreferences(savedInstanceState: Bundle?, rootKey: String?) {
+        setPreferencesFromResource(R.xml.main_preference, rootKey)
     }
 
-    companion object {
-        @JvmStatic
-        fun newInstance() = SettingsFragment()
-    }
 }
