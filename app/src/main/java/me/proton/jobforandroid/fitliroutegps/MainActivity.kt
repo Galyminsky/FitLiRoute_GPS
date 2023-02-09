@@ -4,6 +4,10 @@ import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.widget.Toast
 import me.proton.jobforandroid.fitliroutegps.databinding.ActivityMainBinding
+import me.proton.jobforandroid.fitliroutegps.fragments.MainFragment
+import me.proton.jobforandroid.fitliroutegps.fragments.SettingsFragment
+import me.proton.jobforandroid.fitliroutegps.fragments.TracksFragment
+import me.proton.jobforandroid.fitliroutegps.utils.openFragment
 
 class MainActivity : AppCompatActivity() {
     private lateinit var binding: ActivityMainBinding
@@ -14,21 +18,21 @@ class MainActivity : AppCompatActivity() {
         setContentView(binding.root)
 
         onBottomNavClicks()
+        openFragment(MainFragment.newInstance())
 
     }
 
     private fun onBottomNavClicks() {
         binding.bNan.setOnItemSelectedListener {
             when(it.itemId) {
-
                 R.id.home_menu -> {
-                    Toast.makeText(this, "Home", Toast.LENGTH_SHORT).show()
+                    openFragment(MainFragment.newInstance())
                 }
                 R.id.trucks_menu -> {
-                    Toast.makeText(this, "Trucks", Toast.LENGTH_SHORT).show()
+                    openFragment(TracksFragment.newInstance())
                 }
                 R.id.setting_menu -> {
-                    Toast.makeText(this, "Setting", Toast.LENGTH_SHORT).show()
+                    openFragment(SettingsFragment.newInstance())
                 }
             }
             true
