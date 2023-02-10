@@ -1,7 +1,7 @@
 package me.proton.jobforandroid.fitliroutegps
 
-import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
+import androidx.appcompat.app.AppCompatActivity
 import me.proton.jobforandroid.fitliroutegps.databinding.ActivityMainBinding
 import me.proton.jobforandroid.fitliroutegps.fragments.MainFragment
 import me.proton.jobforandroid.fitliroutegps.fragments.SettingsFragment
