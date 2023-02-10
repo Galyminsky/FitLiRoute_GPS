@@ -1,5 +1,6 @@
 package me.proton.jobforandroid.fitliroutegps.utils
 
+import android.util.Log
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import androidx.fragment.app.Fragment
@@ -14,6 +15,9 @@ fun Fragment.openFragment (f: Fragment) {
 }
 
 fun AppCompatActivity.openFragment (f: Fragment) {
+    if (supportFragmentManager.fragments.isNotEmpty()) {
+        if (supportFragmentManager.fragments[0].javaClass == f.javaClass) return
+    }
     supportFragmentManager
         .beginTransaction()
         .setCustomAnimations(android.R.anim.fade_in, android.R.anim.fade_out)
