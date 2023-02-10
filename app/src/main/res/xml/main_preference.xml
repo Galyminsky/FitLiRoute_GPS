@@ -2,7 +2,9 @@
 <PreferenceScreen xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:android="http://schemas.android.com/apk/res/android">
 
-    <PreferenceCategory android:title="@string/location">
+    <PreferenceCategory
+        android:title="@string/location"
+        android:icon="@drawable/ic_location_main">
 
         <ListPreference
             android:defaultValue="3000"
@@ -12,5 +14,24 @@
             android:title="@string/update_time"
             app:icon="@drawable/ic_update_time"
             app:summary="@string/update_time_summary" />
+
+        <ListPreference
+            android:defaultValue="#FA2C2C"
+            android:entries="@array/color_name"
+            android:entryValues="@array/color_value"
+            android:key="color_key"
+            android:title="@string/truck_color"
+            app:icon="@drawable/ic_circle"
+            app:summary="@string/truck_color_summary" />
     </PreferenceCategory>
+    <PreferenceCategory
+        android:title="Language"
+        android:icon="@drawable/ic_language">
+    </PreferenceCategory>
+
+    <PreferenceCategory
+        android:title="Remove ADS"
+        android:icon="@drawable/ic_ads_remove">
+    </PreferenceCategory>
+
 </PreferenceScreen>
