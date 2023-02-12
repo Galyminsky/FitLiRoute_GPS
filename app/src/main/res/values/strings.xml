@@ -19,7 +19,8 @@
     <string name="location_dialog_message">Do you want enabled GPS?</string>
     <string name="location_bnt_yes">Yes</string>
     <string name="location_bnt_no">No</string>
-
+    <string name="play_btn">play</string>
+    <string name="myLocation">MyLocation</string>
 
 
 </resources>
