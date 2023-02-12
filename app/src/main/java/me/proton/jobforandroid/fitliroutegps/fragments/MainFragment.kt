@@ -1,7 +1,6 @@
 package me.proton.jobforandroid.fitliroutegps.fragments
 
 import android.Manifest
-import android.app.LocaleManager
 import android.content.Context
 import android.content.Intent
 import android.location.LocationManager
