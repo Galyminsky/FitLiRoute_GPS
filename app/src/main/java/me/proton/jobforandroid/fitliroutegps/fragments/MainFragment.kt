@@ -15,6 +15,7 @@ import androidx.annotation.RequiresApi
 import androidx.appcompat.app.AppCompatActivity
 import androidx.fragment.app.Fragment
 import me.proton.jobforandroid.fitliroutegps.databinding.FragmentMainBinding
+import me.proton.jobforandroid.fitliroutegps.utils.DialogManager
 import me.proton.jobforandroid.fitliroutegps.utils.checkPermission
 import me.proton.jobforandroid.fitliroutegps.utils.showToast
 import org.osmdroid.config.Configuration
@@ -121,7 +122,7 @@ class MainFragment : Fragment() {
         val lManager = activity?.getSystemService(Context.LOCATION_SERVICE) as LocationManager
         val isEnabled = lManager.isProviderEnabled(LocationManager.GPS_PROVIDER)
         if (!isEnabled) {
-            showToast("GPS disabled!")
+            DialogManager.showLocEnabledDialog(activity as AppCompatActivity)
         } else {
             showToast("GPS enabled!")
         }
