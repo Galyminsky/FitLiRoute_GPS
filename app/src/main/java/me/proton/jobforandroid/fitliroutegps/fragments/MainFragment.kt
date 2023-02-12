@@ -43,8 +43,11 @@ class MainFragment : Fragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         registerPermissions()
-        checkLocPermission()
+    }
 
+    override fun onResume() {
+        super.onResume()
+        checkLocPermission()
     }
 
     private fun settingOsm() {
