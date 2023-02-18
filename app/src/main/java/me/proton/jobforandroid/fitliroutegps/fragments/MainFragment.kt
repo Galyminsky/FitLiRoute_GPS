@@ -16,6 +16,7 @@ import androidx.annotation.RequiresApi
 import androidx.appcompat.app.AppCompatActivity
 import androidx.fragment.app.Fragment
 import me.proton.jobforandroid.fitliroutegps.databinding.FragmentMainBinding
+import me.proton.jobforandroid.fitliroutegps.location.LocationService
 import me.proton.jobforandroid.fitliroutegps.utils.DialogManager
 import me.proton.jobforandroid.fitliroutegps.utils.checkPermission
 import me.proton.jobforandroid.fitliroutegps.utils.showToast
@@ -42,6 +43,15 @@ class MainFragment : Fragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         registerPermissions()
+
+    }
+
+    private fun startLocalService() {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+            activity?.startForegroundService(Intent(activity, LocationService::class.java))
+        } else {
+            activity?.startService(Intent(activity, LocationService::class.java))
+        }
     }
 
     override fun onResume() {
