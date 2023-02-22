@@ -22,5 +22,7 @@
     <string name="play_btn">play</string>
     <string name="myLocation">MyLocation</string>
 
+    <string name="tvTime">Time:</string>
+
 
 </resources>
