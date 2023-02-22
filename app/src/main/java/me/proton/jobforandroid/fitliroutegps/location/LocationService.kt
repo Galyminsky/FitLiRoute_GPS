@@ -1,6 +1,5 @@
 package me.proton.jobforandroid.fitliroutegps.location
 
-import android.annotation.SuppressLint
 import android.app.NotificationChannel
 import android.app.NotificationManager
 import android.app.PendingIntent
@@ -19,20 +18,19 @@ class LocationService : Service(){
 
     override fun onStartCommand(intent: Intent?, flags: Int, startId: Int): Int {
         startNotification()
+        isRunning = true
         return START_STICKY
     }
 
     override fun onCreate() {
         super.onCreate()
-
     }
 
     override fun onDestroy() {
         super.onDestroy()
-
+        isRunning = false
     }
 
-    @SuppressLint("UnspecifiedImmutableFlag")
     private fun startNotification() {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
             val nChannel = NotificationChannel(
@@ -57,13 +55,13 @@ class LocationService : Service(){
                 this,
                 10,
                 nIntent,
-                0
+                PendingIntent.FLAG_IMMUTABLE
             )
         }
         val notification = NotificationCompat.Builder(
             this,
             CHANNEL_ID
-        ).setSmallIcon(R.mipmap.ic_launcher)
+        ).setSmallIcon(R.drawable.ic_ads_remove)
             .setContentTitle("Tracker running")
             .setContentIntent(pIntent).build()
         startForeground(99, notification)
@@ -71,6 +69,7 @@ class LocationService : Service(){
 
     companion object {
         const val CHANNEL_ID = "channel_1"
+        var isRunning = false
     }
 
 }
