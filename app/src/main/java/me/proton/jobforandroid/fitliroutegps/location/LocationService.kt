@@ -1,34 +1,56 @@
 package me.proton.jobforandroid.fitliroutegps.location
 
+import android.Manifest
 import android.app.NotificationChannel
 import android.app.NotificationManager
 import android.app.PendingIntent
 import android.app.Service
 import android.content.Intent
+import android.content.pm.PackageManager
 import android.os.Build
 import android.os.IBinder
+import android.os.Looper
+import android.util.Log
+import androidx.core.app.ActivityCompat
 import androidx.core.app.NotificationCompat
+import com.google.android.gms.location.*
+import com.google.android.gms.location.Priority.PRIORITY_HIGH_ACCURACY
 import me.proton.jobforandroid.fitliroutegps.MainActivity
 import me.proton.jobforandroid.fitliroutegps.R
 
-class LocationService : Service(){
+class LocationService : Service() {
+
+    private lateinit var locProvider: FusedLocationProviderClient
+    private lateinit var locRequest: LocationRequest
+
+
     override fun onBind(intent: Intent?): IBinder? {
-       return null
+        return null
     }
 
     override fun onStartCommand(intent: Intent?, flags: Int, startId: Int): Int {
         startNotification()
+        startLocationUpdates()
         isRunning = true
         return START_STICKY
     }
 
     override fun onCreate() {
         super.onCreate()
+        initLocation()
     }
 
     override fun onDestroy() {
         super.onDestroy()
         isRunning = false
+        locProvider.removeLocationUpdates(locCallBack)
+    }
+
+    private val locCallBack = object : LocationCallback() {
+        override fun onLocationResult(lResult: LocationResult) {
+            super.onLocationResult(lResult)
+            Log.d("MyLog", "Location: ${lResult.lastLocation?.latitude}")
+        }
     }
 
     private fun startNotification() {
@@ -65,6 +87,28 @@ class LocationService : Service(){
             .setContentTitle("Tracker running")
             .setContentIntent(pIntent).build()
         startForeground(99, notification)
+    }
+
+    private fun initLocation() {
+        locRequest = LocationRequest.create()
+        locRequest.interval = 10000
+        locRequest.fastestInterval = 5000
+        locRequest.priority = PRIORITY_HIGH_ACCURACY
+        locProvider = LocationServices.getFusedLocationProviderClient(baseContext)
+    }
+
+    private fun startLocationUpdates() {
+        if (ActivityCompat.checkSelfPermission(
+                this,
+                Manifest.permission.ACCESS_FINE_LOCATION
+            ) != PackageManager.PERMISSION_GRANTED
+        ) return
+
+        locProvider.requestLocationUpdates(
+            locRequest,
+            locCallBack,
+            Looper.myLooper()
+        )
     }
 
     companion object {
