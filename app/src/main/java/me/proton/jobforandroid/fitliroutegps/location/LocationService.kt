@@ -7,6 +7,7 @@ import android.app.PendingIntent
 import android.app.Service
 import android.content.Intent
 import android.content.pm.PackageManager
+import android.location.Location
 import android.os.Build
 import android.os.IBinder
 import android.os.Looper
@@ -20,6 +21,8 @@ import me.proton.jobforandroid.fitliroutegps.R
 
 class LocationService : Service() {
 
+    private var lastLocation: Location? = null
+    private var distance = 0.0F
     private lateinit var locProvider: FusedLocationProviderClient
     private lateinit var locRequest: LocationRequest
 
@@ -49,9 +52,15 @@ class LocationService : Service() {
     private val locCallBack = object : LocationCallback() {
         override fun onLocationResult(lResult: LocationResult) {
             super.onLocationResult(lResult)
-            Log.d("MyLog", "Location: ${lResult.lastLocation?.latitude}")
+            val currentLocation = lResult.lastLocation
+            if (lastLocation != null && currentLocation!= null) {
+                if (currentLocation.speed > 0.2) distance += lastLocation?.distanceTo(currentLocation)!!
+            }
+            lastLocation = currentLocation
+            Log.d("MyLog", "Location: $distance")
         }
     }
+
 
     private fun startNotification() {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
