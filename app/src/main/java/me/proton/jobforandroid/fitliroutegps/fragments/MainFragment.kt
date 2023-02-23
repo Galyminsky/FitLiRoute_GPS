@@ -9,7 +9,6 @@ import android.location.LocationManager
 import android.os.Build
 import android.os.Bundle
 import android.provider.Settings
-import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.View.OnClickListener
@@ -19,7 +18,7 @@ import androidx.activity.result.contract.ActivityResultContracts
 import androidx.annotation.RequiresApi
 import androidx.appcompat.app.AppCompatActivity
 import androidx.fragment.app.Fragment
-import androidx.lifecycle.MutableLiveData
+import androidx.fragment.app.activityViewModels
 import androidx.localbroadcastmanager.content.LocalBroadcastManager
 import me.proton.jobforandroid.fitliroutegps.R
 import me.proton.jobforandroid.fitliroutegps.databinding.FragmentMainBinding
@@ -29,6 +28,7 @@ import me.proton.jobforandroid.fitliroutegps.utils.DialogManager
 import me.proton.jobforandroid.fitliroutegps.utils.TimeUtils
 import me.proton.jobforandroid.fitliroutegps.utils.checkPermission
 import me.proton.jobforandroid.fitliroutegps.utils.showToast
+import me.proton.jobforandroid.fitliroutegps.viewmodel.MainViewModel
 import org.osmdroid.config.Configuration
 import org.osmdroid.library.BuildConfig
 import org.osmdroid.views.overlay.mylocation.GpsMyLocationProvider
@@ -41,9 +41,9 @@ class MainFragment : Fragment() {
     private var isServiceRunning = false
     private var timer: Timer? = null
     private var startTime = 0L
-    private val timeData = MutableLiveData<String>()
     private lateinit var pLauncher: ActivityResultLauncher<Array<String>>
     private lateinit var binding: FragmentMainBinding
+    private val model: MainViewModel by activityViewModels()
 
 
     override fun onCreateView(
@@ -62,6 +62,7 @@ class MainFragment : Fragment() {
         checkServiceState()
         updateTime()
         registerLocReceiver()
+        locationUpdates()
     }
 
     private fun setOnClicks() = with(binding) {
@@ -71,14 +72,28 @@ class MainFragment : Fragment() {
 
     private fun onClicks(): OnClickListener {
         return OnClickListener {
-            when(it.id) {
+            when (it.id) {
                 R.id.fStartStop -> startStopService()
             }
         }
     }
 
+    private fun locationUpdates() = with(binding) {
+        model.locationUpdates.observe(viewLifecycleOwner) {
+            val distanceLabel = getString(R.string.distanceLabel)
+            val velocityLabel = getString(R.string.velocityLabel)
+            val avVelocityLabel = getString(R.string.avVelocityLabel)
+            val distance = "$distanceLabel ${String.format("%.1f", it.distance)} m"
+            val velocity = "$velocityLabel ${String.format("%.1f", 3.6 * it.velocity)} km/h"
+
+            tvDistance.text = distance
+            tvVelosity.text = velocity
+
+        }
+    }
+
     private fun updateTime() {
-        timeData.observe(viewLifecycleOwner){
+        model.timeData.observe(viewLifecycleOwner) {
             binding.tvTime.text = it
         }
     }
@@ -90,7 +105,7 @@ class MainFragment : Fragment() {
         timer?.schedule(object : TimerTask() {
             override fun run() {
                 activity?.runOnUiThread {
-                    timeData.value = getCurrentTime()
+                    model.timeData.value = getCurrentTime()
                 }
             }
 
@@ -146,7 +161,7 @@ class MainFragment : Fragment() {
     }
 
     private fun initOsm() = with(binding){
-        map.controller.setZoom(18.0)
+        map.controller.setZoom(20.0)
         //map.controller.animateTo(GeoPoint(52.54735, 62.50001))
         val mLocProvider = GpsMyLocationProvider(activity)
         val mLocOverlay = MyLocationNewOverlay(mLocProvider, map)
@@ -219,7 +234,6 @@ class MainFragment : Fragment() {
                     override fun onClick() {
                         startActivity(Intent(Settings.ACTION_LOCATION_SOURCE_SETTINGS))
                     }
-
                 })
         } else {
             showToast("GPS enabled!")
@@ -231,10 +245,9 @@ class MainFragment : Fragment() {
             if (i?.action == LocationService.LOC_MODEL_INTENT) {
                 val locModel =
                     i.getSerializableExtra(LocationService.LOC_MODEL_INTENT) as LocationModel
-                Log.d("MyLog", "onReceive ${locModel.distance}")
+                model.locationUpdates.value = locModel
             }
         }
-
     }
 
     private fun registerLocReceiver() {

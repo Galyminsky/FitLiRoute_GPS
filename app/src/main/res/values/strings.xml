@@ -23,6 +23,9 @@
     <string name="myLocation">MyLocation</string>
 
     <string name="tvTime">Time:</string>
+    <string name="distanceLabel">Distance:</string>
+    <string name="velocityLabel">Velocity:</string>
+    <string name="avVelocityLabel">Average Velocity:</string>
 
 
 </resources>
