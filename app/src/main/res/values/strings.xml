@@ -15,6 +15,14 @@
     <string name="language">Language</string>
     <string name="language_summary">Choose language</string>
 
+    <string name="location_disabled">Location disabled</string>
+    <string name="location_dialog_message">Do you want enabled GPS?</string>
+    <string name="location_bnt_yes">Yes</string>
+    <string name="location_bnt_no">No</string>
+    <string name="play_btn">play</string>
+    <string name="myLocation">MyLocation</string>
+
+    <string name="tvTime">Time:</string>
 
 
 </resources>
