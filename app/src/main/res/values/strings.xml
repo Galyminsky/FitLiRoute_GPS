@@ -26,6 +26,12 @@
     <string name="distanceLabel">Distance:</string>
     <string name="velocityLabel">Velocity:</string>
     <string name="avVelocityLabel">Average Velocity:</string>
+    <string name="save_this_track_dialog">Save this track?</string>
+    <string name="time_dialog">Time:</string>
+    <string name="velocity_dialog">Velocity:</string>
+    <string name="distance_dialog">Distance:</string>
+    <string name="save_dialog_btn">Save</string>
+    <string name="cancel_dialog_btn">Cancel</string>
 
 
 </resources>
