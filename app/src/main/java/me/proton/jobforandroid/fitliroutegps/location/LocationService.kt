@@ -138,7 +138,5 @@ class LocationService : Service() {
         const val LOC_MODEL_INTENT = "loc_intent"
         var isRunning = false
         var startTime = 0L
-
     }
-
 }

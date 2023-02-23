@@ -32,6 +32,13 @@
     <string name="distance_dialog">Distance:</string>
     <string name="save_dialog_btn">Save</string>
     <string name="cancel_dialog_btn">Cancel</string>
+    <string name="time_00_24_24_fake">Time: 00:24:24</string>
+    <string name="average_velosity_3_5_km_h_fake">Average velosity: 3.5 kmh</string>
+    <string name="velosity_3_5km_h_fake">Velosity: 3.5km/h</string>
+    <string name="distance_16_5_km_fake">Distance: 16.5 km</string>
+    <string name="fragment_settings_fake">FRAGMENT SETTINGS</string>
+    <string name="fragment_tracks_fake">FRAGMENT TRACKS</string>
+    <string name="fragment_view_track_fake">FRAGMENT VIEW TRACK</string>
 
 
 </resources>
