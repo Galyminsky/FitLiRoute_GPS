@@ -68,8 +68,6 @@ class LocationService : Service() {
                 sendLocData(locModel)
             }
             lastLocation = currentLocation
-
-            Log.d("MyLog", "Distance: $distance")
         }
     }
 
@@ -77,10 +75,7 @@ class LocationService : Service() {
         val i = Intent(LOC_MODEL_INTENT)
         i.putExtra(LOC_MODEL_INTENT, locModel)
         LocalBroadcastManager.getInstance(applicationContext).sendBroadcast(i)
-
     }
-
-
 
     private fun startNotification() {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
@@ -139,7 +134,6 @@ class LocationService : Service() {
             Looper.myLooper()
         )
     }
-
     companion object {
         const val CHANNEL_ID = "channel_1"
         const val LOC_MODEL_INTENT = "loc_intent"
