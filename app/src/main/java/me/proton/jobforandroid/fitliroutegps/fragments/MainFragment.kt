@@ -85,9 +85,11 @@ class MainFragment : Fragment() {
             val avVelocityLabel = getString(R.string.avVelocityLabel)
             val distance = "$distanceLabel ${String.format("%.1f", it.distance)} m"
             val velocity = "$velocityLabel ${String.format("%.1f", 3.6 * it.velocity)} km/h"
+            val avVelocity = "$avVelocityLabel ${getAverageVelocity(it.distance)}"
 
             tvDistance.text = distance
             tvVelosity.text = velocity
+            tvAveragaVel.text = avVelocity
 
         }
     }
@@ -110,6 +112,11 @@ class MainFragment : Fragment() {
             }
 
         }, 1, 1)
+    }
+
+    private fun getAverageVelocity(distance: Float): String {
+        return String.format("%.1f m/s", 3.6f * (distance / ((System.currentTimeMillis() - startTime) / 1000.0f)))
+
     }
 
     private fun getCurrentTime(): String {
