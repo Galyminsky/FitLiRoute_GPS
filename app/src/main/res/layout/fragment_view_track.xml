@@ -15,7 +15,7 @@
         android:layout_marginTop="356dp"
         android:layout_marginEnd="127dp"
         android:layout_marginBottom="356dp"
-        android:text="FRAGMENT VIEW TRACK"
+        android:text="@string/fragment_view_track_fake"
         android:textColor="@color/black"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"

@@ -3,5 +3,6 @@
     <string name="home_menu">Home</string>
     <string name="setting_menu">Setting</string>
     <string name="tracks">Tracks</string>
+    <string name="save_this_track_dialog">Save this track?</string>
 
 </resources>

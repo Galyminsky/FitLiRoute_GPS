@@ -2,8 +2,7 @@ package me.proton.jobforandroid.fitliroutegps.utils
 
 import android.annotation.SuppressLint
 import java.text.SimpleDateFormat
-import java.util.Calendar
-import java.util.TimeZone
+import java.util.*
 
 object TimeUtils {
 

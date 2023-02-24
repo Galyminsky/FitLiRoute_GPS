@@ -15,7 +15,7 @@
         android:layout_marginTop="356dp"
         android:layout_marginEnd="135dp"
         android:layout_marginBottom="356dp"
-        android:text="FRAGMENT SETTINGS"
+        android:text="@string/fragment_settings_fake"
         android:textColor="@color/black"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"

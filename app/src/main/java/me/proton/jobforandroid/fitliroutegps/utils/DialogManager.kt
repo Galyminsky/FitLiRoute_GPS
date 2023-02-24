@@ -2,8 +2,11 @@ package me.proton.jobforandroid.fitliroutegps.utils
 
 import android.app.AlertDialog
 import android.content.Context
-import android.widget.Toast
+import android.graphics.Color
+import android.graphics.drawable.ColorDrawable
+import android.view.LayoutInflater
 import me.proton.jobforandroid.fitliroutegps.R
+import me.proton.jobforandroid.fitliroutegps.databinding.SaveDialogBinding
 
 object DialogManager {
 
@@ -21,6 +24,25 @@ object DialogManager {
                 _, _ -> dialog.dismiss()
 
         }
+        dialog.show()
+    }
+
+    fun showSaveDialog(context: Context, listener: Listener) {
+        val builder = AlertDialog.Builder(context)
+        val binding = SaveDialogBinding.inflate(LayoutInflater.from(context), null, false)
+        builder.setView(binding.root)
+        val dialog = builder.create()
+
+        binding.apply {
+            btnSaveDialog.setOnClickListener {
+                listener.onClick()
+                dialog.dismiss()
+            }
+            btnCancelDialog.setOnClickListener {
+                dialog.dismiss()
+            }
+        }
+        dialog.window?.setBackgroundDrawable(ColorDrawable(Color.TRANSPARENT))
         dialog.show()
     }
 
