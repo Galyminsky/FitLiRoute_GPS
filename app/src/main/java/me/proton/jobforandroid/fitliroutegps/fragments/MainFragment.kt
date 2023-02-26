@@ -23,6 +23,7 @@ import androidx.fragment.app.activityViewModels
 import androidx.localbroadcastmanager.content.LocalBroadcastManager
 import me.proton.jobforandroid.fitliroutegps.R
 import me.proton.jobforandroid.fitliroutegps.databinding.FragmentMainBinding
+import me.proton.jobforandroid.fitliroutegps.db.TrackItem
 import me.proton.jobforandroid.fitliroutegps.location.LocationModel
 import me.proton.jobforandroid.fitliroutegps.location.LocationService
 import me.proton.jobforandroid.fitliroutegps.utils.DialogManager
@@ -40,6 +41,7 @@ import java.util.*
 
 class MainFragment : Fragment() {
 
+    private var trackItem: TrackItem? = null
     private var pl: Polyline? = null
     private var isServiceRunning = false
     private var firstStart = true
@@ -94,6 +96,14 @@ class MainFragment : Fragment() {
             tvDistance.text = distance
             tvVelosity.text = velocity
             tvAveragaVel.text = avVelocity
+            trackItem = TrackItem(
+                null,
+                getCurrentTime(),
+                TimeUtils.getDate(),
+                String.format("%.1f", it.distance / 1000),
+                getAverageVelocity(it.distance),
+                ""
+            )
             updatePolyline(it.geoPoints)
 
         }
@@ -136,7 +146,8 @@ class MainFragment : Fragment() {
             activity?.stopService(Intent(activity, LocationService::class.java))
             binding.fStartStop.setImageResource(R.drawable.ic_play)
             timer?.cancel()
-            DialogManager.showSaveDialog(requireContext(), object : DialogManager.Listener{
+            DialogManager.showSaveDialog(requireContext(),
+                trackItem, object : DialogManager.Listener{
                 override fun onClick() {
                     showToast("Track Saved!")
                 }
