@@ -10,6 +10,7 @@ import android.location.LocationManager
 import android.os.Build
 import android.os.Bundle
 import android.provider.Settings
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.View.OnClickListener
@@ -41,7 +42,7 @@ import java.util.*
 
 class MainFragment : Fragment() {
 
-    private var trackItem: TrackItem? = null
+    private var locationModel: LocationModel? = null
     private var pl: Polyline? = null
     private var isServiceRunning = false
     private var firstStart = true
@@ -96,16 +97,8 @@ class MainFragment : Fragment() {
             tvDistance.text = distance
             tvVelosity.text = velocity
             tvAveragaVel.text = avVelocity
-            trackItem = TrackItem(
-                null,
-                getCurrentTime(),
-                TimeUtils.getDate(),
-                String.format("%.1f", it.distance / 1000),
-                getAverageVelocity(it.distance),
-                ""
-            )
-            updatePolyline(it.geoPoints)
-
+            locationModel = it
+            updatePolyline(it.geoPointsList)
         }
     }
 
@@ -130,13 +123,25 @@ class MainFragment : Fragment() {
     }
 
     private fun getAverageVelocity(distance: Float): String {
-        return String.format("%.1f m/s", 3.6f * (distance / ((System.currentTimeMillis() - startTime) / 1000.0f)))
+        return String.format(
+            "%.1f m/s",
+            3.6f * (distance / ((System.currentTimeMillis() - startTime) / 1000.0f))
+        )
 
     }
 
     private fun getCurrentTime(): String {
         val timeLabel = getString(R.string.tvTime)
         return "$timeLabel ${TimeUtils.getTime(System.currentTimeMillis() - startTime)}"
+    }
+
+    private fun geoPointsToString(list: List<GeoPoint>): String {
+        val sb = StringBuilder()
+        list.forEach {
+            sb.append("${it.latitude},${it.longitude}/")
+        }
+        Log.d("MyLog", "Points: $sb")
+        return sb.toString()
     }
 
     private fun startStopService() {
@@ -147,17 +152,29 @@ class MainFragment : Fragment() {
             binding.fStartStop.setImageResource(R.drawable.ic_play)
             timer?.cancel()
             DialogManager.showSaveDialog(requireContext(),
-                trackItem, object : DialogManager.Listener{
-                override fun onClick() {
-                    showToast("Track Saved!")
-                }
+                getTrackItem(),
+                object : DialogManager.Listener {
+                    override fun onClick() {
+                        showToast("Track Saved!")
+                    }
 
-            })
+                })
         }
         isServiceRunning = !isServiceRunning
     }
 
-    private fun checkServiceState () {
+    private fun getTrackItem(): TrackItem {
+        return TrackItem(
+            null,
+            getCurrentTime(),
+            TimeUtils.getDate(),
+            String.format("%.1f", locationModel?.distance?.div(1000) ?: 0),
+                getAverageVelocity(locationModel?.distance ?: 0.0f),
+                geoPointsToString(locationModel?.geoPointsList ?: listOf()),
+        )
+    }
+
+    private fun checkServiceState() {
         isServiceRunning = LocationService.isRunning
         if (isServiceRunning) {
             binding.fStartStop.setImageResource(R.drawable.ic_stop)
@@ -319,3 +336,5 @@ class MainFragment : Fragment() {
     }
 
 }
+
+
