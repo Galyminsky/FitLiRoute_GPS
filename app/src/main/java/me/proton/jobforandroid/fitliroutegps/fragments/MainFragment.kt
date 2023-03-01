@@ -22,6 +22,7 @@ import androidx.appcompat.app.AppCompatActivity
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
 import androidx.localbroadcastmanager.content.LocalBroadcastManager
+import me.proton.jobforandroid.fitliroutegps.MainApp
 import me.proton.jobforandroid.fitliroutegps.R
 import me.proton.jobforandroid.fitliroutegps.databinding.FragmentMainBinding
 import me.proton.jobforandroid.fitliroutegps.db.TrackItem
@@ -50,7 +51,9 @@ class MainFragment : Fragment() {
     private var startTime = 0L
     private lateinit var pLauncher: ActivityResultLauncher<Array<String>>
     private lateinit var binding: FragmentMainBinding
-    private val model: MainViewModel by activityViewModels()
+    private val model: MainViewModel by activityViewModels {
+        MainViewModel.ViewModelFactory((requireContext().applicationContext as MainApp).database)
+    }
 
 
     override fun onCreateView(
@@ -70,6 +73,9 @@ class MainFragment : Fragment() {
         updateTime()
         registerLocReceiver()
         locationUpdates()
+        model.tracks.observe(viewLifecycleOwner) {
+            Log.d("MyLog", "ListSize: ${it.size}")
+        }
     }
 
     private fun setOnClicks() = with(binding) {
@@ -151,13 +157,14 @@ class MainFragment : Fragment() {
             activity?.stopService(Intent(activity, LocationService::class.java))
             binding.fStartStop.setImageResource(R.drawable.ic_play)
             timer?.cancel()
+            val track = getTrackItem()
             DialogManager.showSaveDialog(requireContext(),
-                getTrackItem(),
+                track,
                 object : DialogManager.Listener {
                     override fun onClick() {
                         showToast("Track Saved!")
+                        model.insertTrack(track)
                     }
-
                 })
         }
         isServiceRunning = !isServiceRunning
