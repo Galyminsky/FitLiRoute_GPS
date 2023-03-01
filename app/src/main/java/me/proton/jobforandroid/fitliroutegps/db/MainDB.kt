@@ -8,6 +8,8 @@ import androidx.room.RoomDatabase
 @Database(entities = [TrackItem::class], version = 1, exportSchema = false)
 abstract class MainDB : RoomDatabase() {
 
+    abstract fun getDao(): Dao
+
     companion object {
         @Volatile
         var INSTANCE: MainDB? = null
