@@ -73,9 +73,7 @@ class MainFragment : Fragment() {
         updateTime()
         registerLocReceiver()
         locationUpdates()
-        model.tracks.observe(viewLifecycleOwner) {
-            Log.d("MyLog", "ListSize: ${it.size}")
-        }
+
     }
 
     private fun setOnClicks() = with(binding) {
