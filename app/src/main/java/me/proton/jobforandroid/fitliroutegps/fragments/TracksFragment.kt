@@ -1,6 +1,7 @@
 package me.proton.jobforandroid.fitliroutegps.fragments
 
 import android.os.Bundle
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -10,9 +11,10 @@ import androidx.recyclerview.widget.LinearLayoutManager
 import me.proton.jobforandroid.fitliroutegps.MainApp
 import me.proton.jobforandroid.fitliroutegps.databinding.FragmentTracksBinding
 import me.proton.jobforandroid.fitliroutegps.db.TrackAdapter
+import me.proton.jobforandroid.fitliroutegps.db.TrackItem
 import me.proton.jobforandroid.fitliroutegps.viewmodel.MainViewModel
 
-class TracksFragment : Fragment() {
+class TracksFragment : Fragment(), TrackAdapter.Listener {
 
     private lateinit var binding: FragmentTracksBinding
     private lateinit var adapter: TrackAdapter
@@ -44,7 +46,7 @@ class TracksFragment : Fragment() {
     }
 
     private fun initRcView() = with(binding) {
-        adapter = TrackAdapter()
+        adapter = TrackAdapter(this@TracksFragment)
         rcView.layoutManager = LinearLayoutManager(requireContext())
         rcView.adapter = adapter
 
@@ -53,5 +55,9 @@ class TracksFragment : Fragment() {
     companion object {
         @JvmStatic
         fun newInstance() = TracksFragment()
+    }
+
+    override fun onClick(track: TrackItem) {
+        model.deleteTrack(track)
     }
 }
