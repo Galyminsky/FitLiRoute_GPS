@@ -7,6 +7,7 @@ import android.graphics.drawable.ColorDrawable
 import android.view.LayoutInflater
 import me.proton.jobforandroid.fitliroutegps.R
 import me.proton.jobforandroid.fitliroutegps.databinding.SaveDialogBinding
+import me.proton.jobforandroid.fitliroutegps.db.TrackItem
 
 object DialogManager {
 
@@ -27,13 +28,22 @@ object DialogManager {
         dialog.show()
     }
 
-    fun showSaveDialog(context: Context, listener: Listener) {
+    fun showSaveDialog(context: Context, item: TrackItem?, listener: Listener) {
         val builder = AlertDialog.Builder(context)
         val binding = SaveDialogBinding.inflate(LayoutInflater.from(context), null, false)
         builder.setView(binding.root)
         val dialog = builder.create()
 
         binding.apply {
+
+            val time = "${item?.time} m"
+            val velocity = "${item?.velocity} km/h"
+            val distance = "${item?.distance} km"
+
+            tvTimeDialog.text = time
+            tvVelocityDialog.text = velocity
+            tvDistanceDialog.text = distance
+
             btnSaveDialog.setOnClickListener {
                 listener.onClick()
                 dialog.dismiss()
