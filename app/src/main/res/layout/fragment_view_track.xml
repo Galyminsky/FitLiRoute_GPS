@@ -56,7 +56,7 @@
         android:background="#4DFFFFFF"
         android:fontFamily="@font/acme"
         android:padding="5dp"
-        android:text="@string/average_velosity_3_5_km_h_fake"
+        android:text="@string/average_velocity_3_5_km_h_fake"
         android:textColor="@color/black"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/tvTime" />

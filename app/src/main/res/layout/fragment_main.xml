@@ -72,13 +72,13 @@
         android:background="#4DFFFFFF"
         android:fontFamily="@font/acme"
         android:padding="5dp"
-        android:text="@string/average_velosity_3_5_km_h_fake"
+        android:text="@string/average_velocity_3_5_km_h_fake"
         android:textColor="@color/black"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/tvTime" />
 
     <TextView
-        android:id="@+id/tvVelosity"
+        android:id="@+id/tvVelocity"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginStart="10dp"
@@ -87,7 +87,7 @@
         android:backgroundTint="#4DFFFFFF"
         android:fontFamily="@font/acme"
         android:padding="5dp"
-        android:text="@string/velosity_3_5km_h_fake"
+        android:text="@string/velocity_3_5km_h_fake"
         android:textColor="@color/black"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/tvAveragaVel" />
@@ -106,6 +106,6 @@
         android:textColor="@color/black"
         android:textSize="24sp"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/tvVelosity" />
+        app:layout_constraintTop_toBottomOf="@+id/tvVelocity" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>

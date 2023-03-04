@@ -108,7 +108,7 @@ class MainFragment : Fragment() {
             val avVelocity = "$avVelocityLabel ${getAverageVelocity(it.distance)}"
 
             tvDistance.text = distance
-            tvVelosity.text = velocity
+            tvVelocity.text = velocity
             tvAveragaVel.text = avVelocity
             locationModel = it
             updatePolyline(it.geoPointsList)
@@ -210,6 +210,7 @@ class MainFragment : Fragment() {
     override fun onResume() {
         super.onResume()
         checkLocPermission()
+        firstStart = true
     }
 
     private fun settingOsm() {
@@ -227,15 +228,15 @@ class MainFragment : Fragment() {
                 .getString("color_key", "#FA2C2C")
         )
         map.controller.setZoom(20.0)
-        //map.controller.animateTo(GeoPoint(52.54735, 62.50001))
         val mLocProvider = GpsMyLocationProvider(activity)
         mLocOverlay = MyLocationNewOverlay(mLocProvider, map)
         mLocOverlay.enableMyLocation()
         mLocOverlay.enableFollowLocation()
         mLocOverlay.runOnFirstFix {
             map.overlays.clear()
-            map.overlays.add(mLocOverlay)
             map.overlays.add(pl)
+            map.overlays.add(mLocOverlay)
+
         }
     }
 
@@ -323,7 +324,7 @@ class MainFragment : Fragment() {
     }
 
     private fun addPoint(list: List<GeoPoint>) {
-        pl?.addPoint(list[list.size - 1])
+        if (list.isNotEmpty()) pl?.addPoint(list[list.size - 1])
     }
 
     private fun fillPolyline(list: List<GeoPoint>) {
