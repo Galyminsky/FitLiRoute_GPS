@@ -41,7 +41,7 @@
         android:backgroundTint="#4DFFFFFF"
         android:fontFamily="@font/acme"
         android:padding="5dp"
-        android:text="Date: 02.03.2023"
+        android:text="Date: 00.00.0000"
         android:textColor="@color/black"
         android:textSize="16sp"
         app:layout_constraintStart_toStartOf="parent"
