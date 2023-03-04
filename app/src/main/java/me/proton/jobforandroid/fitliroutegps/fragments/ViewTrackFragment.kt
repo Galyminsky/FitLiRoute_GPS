@@ -24,6 +24,7 @@ import org.osmdroid.views.overlay.Polyline
 class ViewTrackFragment : Fragment() {
 
     private lateinit var binding: FragmentViewTrackBinding
+    private var startPoint: GeoPoint? = null
     private val model: MainViewModel by activityViewModels {
         MainViewModel.ViewModelFactory((requireContext().applicationContext as MainApp).database)
     }
@@ -40,6 +41,9 @@ class ViewTrackFragment : Fragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         getTrack()
+        binding.fCenter.setOnClickListener {
+            if (startPoint != null) binding.map.controller.animateTo(startPoint)
+        }
     }
 
     private fun getTrack() = with(binding) {
@@ -56,6 +60,7 @@ class ViewTrackFragment : Fragment() {
             map.overlays.add(polyline)
             setMarkers(polyline.actualPoints)
             goToStartPosition(polyline.actualPoints[0])
+            startPoint = polyline.actualPoints[0]
         }
     }
 
