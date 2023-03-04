@@ -1,6 +1,7 @@
 package me.proton.jobforandroid.fitliroutegps.fragments
 
 import android.content.Context
+import android.graphics.Color
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
@@ -9,6 +10,7 @@ import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.content.res.AppCompatResources.getDrawable
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
+import androidx.preference.PreferenceManager
 import me.proton.jobforandroid.fitliroutegps.MainApp
 import me.proton.jobforandroid.fitliroutegps.R
 import me.proton.jobforandroid.fitliroutegps.databinding.FragmentViewTrackBinding
@@ -77,6 +79,10 @@ class ViewTrackFragment : Fragment() {
 
     private fun getPolyline(geoPoints: String): Polyline {
         val polyline = Polyline()
+        polyline.outlinePaint.color = Color.parseColor(
+            PreferenceManager.getDefaultSharedPreferences(requireContext())
+                .getString("color_key", "#FA2C2C")
+        )
         val list = geoPoints.split("/")
         list.forEach {
             if (it.isEmpty()) return@forEach

@@ -24,14 +24,5 @@
             app:icon="@drawable/ic_circle"
             app:summary="@string/truck_color_summary" />
     </PreferenceCategory>
-    <PreferenceCategory
-        android:title="Language"
-        android:icon="@drawable/ic_language">
-    </PreferenceCategory>
-
-    <PreferenceCategory
-        android:title="Remove ADS"
-        android:icon="@drawable/ic_ads_remove">
-    </PreferenceCategory>
 
 </PreferenceScreen>

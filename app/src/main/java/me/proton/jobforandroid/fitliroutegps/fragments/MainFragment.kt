@@ -22,6 +22,7 @@ import androidx.appcompat.app.AppCompatActivity
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
 import androidx.localbroadcastmanager.content.LocalBroadcastManager
+import androidx.preference.PreferenceManager
 import me.proton.jobforandroid.fitliroutegps.MainApp
 import me.proton.jobforandroid.fitliroutegps.R
 import me.proton.jobforandroid.fitliroutegps.databinding.FragmentMainBinding
@@ -213,7 +214,10 @@ class MainFragment : Fragment() {
 
     private fun initOsm() = with(binding){
         pl = Polyline()
-        pl?.outlinePaint?.color = Color.BLUE
+        pl?.outlinePaint?.color = Color.parseColor(
+            PreferenceManager.getDefaultSharedPreferences(requireContext())
+                .getString("color_key", "#FA2C2C")
+        )
         map.controller.setZoom(20.0)
         //map.controller.animateTo(GeoPoint(52.54735, 62.50001))
         val mLocProvider = GpsMyLocationProvider(activity)
