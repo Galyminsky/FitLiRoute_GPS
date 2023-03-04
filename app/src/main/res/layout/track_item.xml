@@ -2,6 +2,7 @@
 <com.google.android.material.card.MaterialCardView xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/item"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
     android:layout_margin="5dp"
@@ -88,11 +89,11 @@
             android:layout_height="wrap_content"
             android:layout_marginTop="8dp"
             android:background="@null"
+            android:contentDescription="delete"
             app:layout_constraintBottom_toBottomOf="@+id/tvTime"
             app:layout_constraintEnd_toEndOf="@+id/tvDistance"
             app:layout_constraintStart_toStartOf="@+id/tvDistance"
             app:layout_constraintTop_toBottomOf="@+id/tvDistance"
-            app:srcCompat="@drawable/ic_delete"
-            android:contentDescription="delete"/>
+            app:srcCompat="@drawable/ic_delete" />
     </androidx.constraintlayout.widget.ConstraintLayout>
 </com.google.android.material.card.MaterialCardView>
