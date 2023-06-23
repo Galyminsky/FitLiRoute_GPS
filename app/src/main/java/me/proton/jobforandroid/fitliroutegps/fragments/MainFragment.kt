@@ -53,6 +53,9 @@ class MainFragment : Fragment() {
     private lateinit var mLocOverlay: MyLocationNewOverlay
     private lateinit var pLauncher: ActivityResultLauncher<Array<String>>
     private lateinit var binding: FragmentMainBinding
+
+    private lateinit var fragmentContext: Context
+
     private val model: MainViewModel by activityViewModels {
         MainViewModel.ViewModelFactory((requireContext().applicationContext as MainApp).database)
     }
@@ -144,7 +147,8 @@ class MainFragment : Fragment() {
     }
 
     private fun getCurrentTime(): String {
-        val timeLabel = getString(R.string.tvTime)
+        val fragmentContext = context ?: return ""
+        val timeLabel = fragmentContext.getString(R.string.tvTime)
         return "$timeLabel ${TimeUtils.getTime(System.currentTimeMillis() - startTime)}"
     }
 
@@ -210,6 +214,11 @@ class MainFragment : Fragment() {
     override fun onResume() {
         super.onResume()
         checkLocPermission()
+    }
+
+    override fun onAttach(context: Context) {
+        super.onAttach(context)
+        fragmentContext = context
     }
 
     private fun settingOsm() {
