@@ -32,5 +32,4 @@ class MainViewModel(db: MainDB) : ViewModel() {
             throw IllegalArgumentException("Unknown ViewModel class")
         }
     }
-
 }

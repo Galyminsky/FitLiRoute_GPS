@@ -50,7 +50,7 @@ class MainFragment : Fragment() {
     private var firstStart = true
     private var timer: Timer? = null
     private var startTime = 0L
-    private lateinit var mLocOverlay: MyLocationNewOverlay
+    lateinit var mLocOverlay: MyLocationNewOverlay
     private lateinit var pLauncher: ActivityResultLauncher<Array<String>>
     private lateinit var binding: FragmentMainBinding
 
@@ -187,8 +187,8 @@ class MainFragment : Fragment() {
             getCurrentTime(),
             TimeUtils.getDate(),
             String.format("%.1f", locationModel?.distance?.div(1000) ?: 0),
-                getAverageVelocity(locationModel?.distance ?: 0.0f),
-                geoPointsToString(locationModel?.geoPointsList ?: listOf()),
+            getAverageVelocity(locationModel?.distance ?: 0.0f),
+            geoPointsToString(locationModel?.geoPointsList ?: listOf()),
         )
     }
 
@@ -229,7 +229,7 @@ class MainFragment : Fragment() {
         Configuration.getInstance().userAgentValue = BuildConfig.LIBRARY_PACKAGE_NAME
     }
 
-    private fun initOsm() = with(binding){
+    private fun initOsm() = with(binding) {
         pl = Polyline()
         pl?.outlinePaint?.color = Color.parseColor(
             PreferenceManager.getDefaultSharedPreferences(requireContext())
@@ -250,7 +250,8 @@ class MainFragment : Fragment() {
 
     private fun registerPermissions() {
         pLauncher = registerForActivityResult(
-            ActivityResultContracts.RequestMultiplePermissions()) {
+            ActivityResultContracts.RequestMultiplePermissions()
+        ) {
             if (it[Manifest.permission.ACCESS_FINE_LOCATION] == true) {
                 initOsm()
                 checkLocationEnabled()
@@ -258,6 +259,7 @@ class MainFragment : Fragment() {
                 showToast("Location not accessed")
             }
         }
+        pLauncher.launch(arrayOf(Manifest.permission.ACCESS_FINE_LOCATION))
     }
 
     private fun checkLocPermission() {
@@ -362,5 +364,3 @@ class MainFragment : Fragment() {
     }
 
 }
-
-
