@@ -39,5 +39,7 @@
     <string name="fragment_settings_fake">FRAGMENT SETTINGS</string>
     <string name="fragment_tracks_fake">FRAGMENT TRACKS</string>
     <string name="fragment_view_track_fake">FRAGMENT VIEW TRACK</string>
+    <string name="truck_color_category">Track Color</string>
+    <string name="update_time_category">Update Time</string>
 
 </resources>

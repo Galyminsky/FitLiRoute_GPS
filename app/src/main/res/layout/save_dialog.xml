@@ -3,7 +3,9 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    app:cardCornerRadius="10dp">
+    android:background="@color/grey_light"
+    app:cardCornerRadius="10dp"
+    app:cardElevation="5dp">
 
     <androidx.constraintlayout.widget.ConstraintLayout
         android:layout_width="match_parent"
@@ -16,7 +18,7 @@
             android:layout_marginTop="16dp"
             android:fontFamily="@font/acme"
             android:text="@string/save_this_track_dialog"
-            android:textColor="@color/black"
+            android:textColor="@color/grey_dark"
             android:textSize="25sp"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
@@ -29,7 +31,7 @@
             android:layout_marginTop="16dp"
             android:fontFamily="@font/acme"
             android:text="@string/time_dialog"
-            android:textColor="@color/blue"
+            android:textColor="@color/grey_dark"
             android:textSize="16sp"
             android:textStyle="bold"
             app:layout_constraintEnd_toEndOf="parent"
@@ -43,7 +45,7 @@
             android:layout_marginTop="10dp"
             android:fontFamily="@font/acme"
             android:text="@string/velocity_dialog"
-            android:textColor="@color/green"
+            android:textColor="@color/grey_dark"
             android:textSize="16sp"
             android:textStyle="bold"
             app:layout_constraintEnd_toEndOf="parent"
@@ -57,7 +59,7 @@
             android:layout_marginTop="10dp"
             android:fontFamily="@font/acme"
             android:text="@string/distance_dialog"
-            android:textColor="@color/red"
+            android:textColor="@color/grey_dark"
             android:textSize="20sp"
             android:textStyle="bold"
             app:layout_constraintEnd_toEndOf="parent"
@@ -84,7 +86,7 @@
                 android:layout_height="wrap_content"
                 android:layout_marginEnd="5dp"
                 android:layout_weight="1"
-                android:backgroundTint="@color/blue"
+                android:backgroundTint="@color/grey_dark"
                 android:text="@string/save_dialog_btn"
                 app:cornerRadius="10dp" />
 
@@ -94,7 +96,7 @@
                 android:layout_height="wrap_content"
                 android:layout_marginStart="5dp"
                 android:layout_weight="1"
-                android:backgroundTint="@color/blue"
+                android:backgroundTint="@color/grey_dark"
                 android:text="@string/cancel_dialog_btn"
                 app:cornerRadius="10dp" />
         </LinearLayout>

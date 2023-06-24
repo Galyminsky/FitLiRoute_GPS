@@ -57,6 +57,7 @@ dependencies {
     // Room
     implementation "androidx.room:room-ktx:2.5.2"
     implementation 'androidx.test:rules:1.5.0'
+    implementation 'androidx.preference:preference:1.2.0'
     kapt "androidx.room:room-compiler:2.5.2"
 
     // Coroutines

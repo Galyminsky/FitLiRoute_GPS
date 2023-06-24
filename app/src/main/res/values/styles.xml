@@ -3,4 +3,7 @@
     <style name="AppTheme" parent="Theme.AppCompat.Light.NoActionBar">
         <item name="android:windowBackground">@android:color/transparent</item>
     </style>
+    <style name="PreferenceTextStyle" parent="PreferenceThemeOverlay">
+        <item name="android:textColor">@color/grey_light</item>
+    </style>
 </resources>
