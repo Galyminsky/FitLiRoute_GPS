@@ -14,4 +14,13 @@
     <color name="green">#4CAF50</color>
     <color name="yellow">#FFC107</color>
 
+
+    <color name="grey_dark">#9d9d9d</color>
+    <color name="grey_dark_strong">#414141</color>
+    <color name="grey_dark_middle">#747474</color>
+    <color name="grey_light">#dfdfdf</color>
+
+    <color name="blue_dark">#5674fd</color>
+    <color name="blue_light">#a3affe</color>
+
 </resources>
