@@ -5,9 +5,9 @@
     android:id="@+id/item"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    android:layout_margin="5dp"
+    android:layout_margin="10dp"
     android:alpha="0.5"
-    android:backgroundTint="@color/grey_light"
+    android:backgroundTint="@color/grey_dark_middle"
     app:cardCornerRadius="10dp"
     app:cardElevation="5dp">
 
@@ -15,7 +15,7 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_margin="10dp"
-        android:background="@color/grey_light"
+        android:background="@color/grey_dark_middle"
         android:padding="10dp">
 
         <TextView
