@@ -2,6 +2,7 @@ plugins {
     id 'com.android.application'
     id 'org.jetbrains.kotlin.android'
     id 'kotlin-kapt'
+    id 'com.google.gms.google-services'
 }
 
 android {
@@ -46,9 +47,11 @@ dependencies {
 
     implementation 'androidx.preference:preference-ktx:1.2.0'
 
+    //OSM
     implementation 'org.osmdroid:osmdroid-android:6.1.14'
     implementation 'com.github.MKergall:osmbonuspack:6.9.0'
 
+    //GSM
     implementation 'com.google.android.gms:play-services-location:21.0.1'
 
     // Room
@@ -63,5 +66,9 @@ dependencies {
     implementation "androidx.lifecycle:lifecycle-viewmodel-ktx:2.6.1"
     implementation "androidx.lifecycle:lifecycle-livedata-ktx:2.6.1"
     implementation "androidx.lifecycle:lifecycle-runtime-ktx:2.6.1"
+
+    //Firebase analytics
+    implementation platform('com.google.firebase:firebase-bom:32.1.1')
+    implementation 'com.google.firebase:firebase-analytics-ktx'
 
 }

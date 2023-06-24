@@ -1,0 +1,68 @@
+{
+  "project_info": {
+    "project_number": "795911499138",
+    "project_id": "fitliroute",
+    "storage_bucket": "fitliroute.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:795911499138:android:8ebf76307010167824739b",
+        "android_client_info": {
+          "package_name": "e.proton.jobforandroid.fitliroutegps"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "795911499138-0bv0764goa1reg4f635cg04vq9sgqone.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyA5MGLQX_vV8RHbQewDzj4BRXy4JyHGO90"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "795911499138-0bv0764goa1reg4f635cg04vq9sgqone.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    },
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:795911499138:android:d52529b4d3fec31924739b",
+        "android_client_info": {
+          "package_name": "me.proton.jobforandroid.fitliroutegps"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "795911499138-0bv0764goa1reg4f635cg04vq9sgqone.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyA5MGLQX_vV8RHbQewDzj4BRXy4JyHGO90"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "795911499138-0bv0764goa1reg4f635cg04vq9sgqone.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
