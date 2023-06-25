@@ -14,7 +14,11 @@ import android.os.Looper
 import androidx.core.app.ActivityCompat
 import androidx.core.app.NotificationCompat
 import androidx.localbroadcastmanager.content.LocalBroadcastManager
-import com.google.android.gms.location.*
+import com.google.android.gms.location.FusedLocationProviderClient
+import com.google.android.gms.location.LocationCallback
+import com.google.android.gms.location.LocationRequest
+import com.google.android.gms.location.LocationResult
+import com.google.android.gms.location.LocationServices
 import com.google.android.gms.location.Priority.PRIORITY_HIGH_ACCURACY
 import me.proton.jobforandroid.fitliroutegps.MainActivity
 import me.proton.jobforandroid.fitliroutegps.R
@@ -27,7 +31,6 @@ class LocationService : Service() {
     private lateinit var locProvider: FusedLocationProviderClient
     private lateinit var locRequest: LocationRequest
     private lateinit var geoPointsList: ArrayList<GeoPoint>
-
 
     override fun onBind(intent: Intent?): IBinder? {
         return null
@@ -133,6 +136,7 @@ class LocationService : Service() {
             Looper.myLooper()
         )
     }
+
     companion object {
         const val CHANNEL_ID = "channel_1"
         const val LOC_MODEL_INTENT = "loc_intent"

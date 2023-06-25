@@ -9,9 +9,11 @@ import androidx.recyclerview.widget.RecyclerView
 import me.proton.jobforandroid.fitliroutegps.R
 import me.proton.jobforandroid.fitliroutegps.databinding.TrackItemBinding
 
-class TrackAdapter(val listener: Listener) : ListAdapter<TrackItem, TrackAdapter.Holder>(Comparator()) {
+class TrackAdapter(val listener: Listener) :
+    ListAdapter<TrackItem, TrackAdapter.Holder>(Comparator()) {
 
-    class Holder(view: View, private val listener: Listener) : RecyclerView.ViewHolder(view), View.OnClickListener {
+    class Holder(view: View, private val listener: Listener) : RecyclerView.ViewHolder(view),
+        View.OnClickListener {
         private val binding = TrackItemBinding.bind(view)
         private var trackTemp: TrackItem? = null
 

@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
-<PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android"
+<PreferenceScreen
+    xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:theme="@style/PreferenceTextStyle">
 
@@ -8,7 +9,6 @@
             android:title="@string/location">
 
             <PreferenceCategory android:title="@string/update_time_category">
-
                 <ListPreference
                     android:defaultValue="3000"
                     android:entries="@array/loc_time_update_name"
@@ -20,7 +20,6 @@
             </PreferenceCategory>
 
             <PreferenceCategory android:title="@string/truck_color_category">
-
                 <ListPreference
                     android:defaultValue="#FA2C2C"
                     android:entries="@array/color_name"

@@ -60,7 +60,6 @@ class MainFragment : Fragment() {
         MainViewModel.ViewModelFactory((requireContext().applicationContext as MainApp).database)
     }
 
-
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
@@ -78,7 +77,6 @@ class MainFragment : Fragment() {
         updateTime()
         registerLocReceiver()
         locationUpdates()
-
     }
 
     private fun setOnClicks() = with(binding) {
@@ -134,7 +132,6 @@ class MainFragment : Fragment() {
                     model.timeData.value = getCurrentTime()
                 }
             }
-
         }, 1, 1)
     }
 
@@ -143,7 +140,6 @@ class MainFragment : Fragment() {
             "%.1f m/s",
             3.6f * (distance / ((System.currentTimeMillis() - startTime) / 1000.0f))
         )
-
     }
 
     private fun getCurrentTime(): String {

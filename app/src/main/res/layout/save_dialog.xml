@@ -11,7 +11,7 @@
     <androidx.constraintlayout.widget.ConstraintLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:background="@color/grey_dark_middle">
+        android:background="@color/grey_light">
 
         <TextView
             android:id="@+id/tvTitle_dialog"

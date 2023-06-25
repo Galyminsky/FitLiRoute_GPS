@@ -7,7 +7,6 @@
     android:layout_height="match_parent"
     tools:context=".fragments.TracksFragment">
 
-
     <androidx.recyclerview.widget.RecyclerView
         android:id="@+id/rcView"
         android:layout_width="0dp"
@@ -25,7 +24,7 @@
         android:layout_marginTop="356dp"
         android:layout_marginEnd="141dp"
         android:layout_marginBottom="356dp"
-        android:text="EMPTY"
+        android:text="@string/empty"
         android:textColor="@color/black"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"

@@ -17,7 +17,7 @@ object TimeUtils {
         return timeFormatter.format(cv.time)
     }
 
-    fun getDate():String {
+    fun getDate(): String {
         val cv = Calendar.getInstance()
         return dateFormatter.format(cv.time)
     }

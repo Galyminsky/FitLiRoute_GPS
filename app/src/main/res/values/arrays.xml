@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
-<resources>
 
+<resources>
     <string-array name="loc_time_update_name">
         <item>3 sec</item>
         <item>5 sec</item>
@@ -32,5 +32,4 @@
     <string-array name="language_value">
         <item>English</item>
     </string-array>
-
 </resources>

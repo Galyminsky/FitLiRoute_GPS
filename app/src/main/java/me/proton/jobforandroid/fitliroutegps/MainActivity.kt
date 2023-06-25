@@ -20,21 +20,21 @@ class MainActivity : AppCompatActivity() {
         binding = ActivityMainBinding.inflate(layoutInflater)
         setContentView(binding.root)
         analytics = Firebase.analytics
-
         onBottomNavClicks()
         openFragment(MainFragment.newInstance())
-
     }
 
     private fun onBottomNavClicks() {
         binding.bNan.setOnItemSelectedListener {
-            when(it.itemId) {
+            when (it.itemId) {
                 R.id.home_menu -> {
                     openFragment(MainFragment.newInstance())
                 }
+
                 R.id.trucks_menu -> {
                     openFragment(TracksFragment.newInstance())
                 }
+
                 R.id.setting_menu -> {
                     openFragment(SettingsFragment())
                 }

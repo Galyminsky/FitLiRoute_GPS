@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
-<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<androidx.constraintlayout.widget.ConstraintLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
@@ -17,7 +18,7 @@
         android:contentDescription="@string/myLocation"
         android:focusable="true"
         android:src="@drawable/ic_loc"
-        app:backgroundTint="@color/grey_dark"
+        app:backgroundTint="@color/grey_light"
         app:layout_constraintBottom_toTopOf="@+id/fStartStop"
         app:layout_constraintEnd_toEndOf="parent" />
 
@@ -32,7 +33,7 @@
         android:contentDescription="@string/play_btn"
         android:focusable="true"
         android:src="@drawable/ic_play"
-        app:backgroundTint="@color/grey_dark"
+        app:backgroundTint="@color/grey_light"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent" />
 
@@ -63,7 +64,7 @@
         <androidx.constraintlayout.widget.ConstraintLayout
             android:layout_width="match_parent"
             android:layout_height="match_parent"
-            android:background="@color/grey_dark_middle"
+            android:background="@color/grey_light"
             android:padding="16dp">
 
             <TextView
@@ -127,9 +128,5 @@
                 app:layout_constraintTop_toBottomOf="@+id/tvVelosity" />
 
         </androidx.constraintlayout.widget.ConstraintLayout>
-
-
     </com.google.android.material.card.MaterialCardView>
-
-
 </androidx.constraintlayout.widget.ConstraintLayout>
