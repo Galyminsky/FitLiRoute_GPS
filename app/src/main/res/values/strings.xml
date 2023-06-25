@@ -1,20 +1,16 @@
 <resources>
     <string name="app_name">Fit Li Route GPS</string>
+
     <string name="home_menu">Home</string>
     <string name="setting_menu">Setting</string>
     <string name="tracks">Tracks</string>
 
-    <string name="update_time">Update Time</string>
-    <string name="update_time_summary">Location update time </string>
-
     <string name="location">LOCATION SETTINGS</string>
-
     <string name="truck_color">Track color</string>
     <string name="truck_color_summary">Choose track color</string>
-
-    <string name="language">Language</string>
-    <string name="language_summary">Choose language</string>
-
+    <string name="update_time">Update Time</string>
+    <string name="update_time_summary">Location update time </string>
+    
     <string name="location_disabled">Location disabled</string>
     <string name="location_dialog_message">Do you want enabled GPS?</string>
     <string name="location_bnt_yes">Yes</string>
@@ -39,5 +35,16 @@
     <string name="fragment_settings_fake">FRAGMENT SETTINGS</string>
     <string name="fragment_tracks_fake">FRAGMENT TRACKS</string>
     <string name="fragment_view_track_fake">FRAGMENT VIEW TRACK</string>
+    <string name="truck_color_category">Track Color</string>
+    <string name="update_time_category">Update Time</string>
+    <string name="empty">EMPTY</string>
+    <string name="date_02_03_2023">Date: 02.03.2023</string>
+    <string name="_02_03_2023_9_00">02.03.2023 9:00</string>
+    <string name="_6_7_km">6.7 km</string>
+    <string name="speed_3_4_km_h">Speed: 0.0 km/h</string>
+    <string name="speed">speed</string>
+    <string name="timer_des">timer_des</string>
+    <string name="time_00_00_00_m">Time: 00:00:00 m</string>
+    <string name="delete">delete</string>
 
 </resources>

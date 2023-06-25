@@ -14,4 +14,23 @@
     <color name="green">#4CAF50</color>
     <color name="yellow">#FFC107</color>
 
+
+    <color name="grey_dark">#455A64</color>
+    <color name="grey_dark_strong">#78909C</color>
+    <color name="grey_dark_middle">#B0BEC5</color>
+    <color name="grey_light">#eceff1</color>
+
+    //Icon Color
+    <color name="blue_main">#01aeef</color>
+    <color name="blue_light_main">#7bd0f5</color>
+    <color name="dark_main">#0a1636</color>
+    <color name="dark_color_tab_main">#273c6b</color>
+    <color name="red_main">#dd2f1c</color>
+    <color name="yellow_main">#f1e857</color>
+    <color name="yellow_light_main">#f9f6a8</color>
+    <color name="green_light_main">#30dbb7</color>
+    <color name="green_main">#a9c161</color>
+
+
+
 </resources>

@@ -32,16 +32,14 @@ class TracksFragment : Fragment(), TrackAdapter.Listener {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-
         initRcView()
         getTracks()
-
     }
 
     private fun getTracks() {
         model.tracks.observe(viewLifecycleOwner) {
             adapter.submitList(it)
-            binding.tvEmpty.visibility =  if (it.isEmpty()) View.VISIBLE else View.GONE
+            binding.tvEmpty.visibility = if (it.isEmpty()) View.VISIBLE else View.GONE
         }
     }
 
@@ -49,7 +47,6 @@ class TracksFragment : Fragment(), TrackAdapter.Listener {
         adapter = TrackAdapter(this@TracksFragment)
         rcView.layoutManager = LinearLayoutManager(requireContext())
         rcView.adapter = adapter
-
     }
 
     companion object {
@@ -59,12 +56,14 @@ class TracksFragment : Fragment(), TrackAdapter.Listener {
 
     override fun onClick(track: TrackItem, type: TrackAdapter.ClickType) {
         when (type) {
-            TrackAdapter.ClickType.DELETE -> { model.deleteTrack(track) }
+            TrackAdapter.ClickType.DELETE -> {
+                model.deleteTrack(track)
+            }
+
             TrackAdapter.ClickType.OPEN -> {
                 model.currentTrack.value = track
                 openFragment(ViewTrackFragment.newInstance())
             }
         }
     }
-
 }
