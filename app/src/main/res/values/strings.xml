@@ -40,9 +40,9 @@
     <string name="empty">EMPTY</string>
     <string name="date_02_03_2023">Date: 02.03.2023</string>
     <string name="_02_03_2023_9_00">02.03.2023 9:00</string>
-    <string name="_6_7_km">6.7 km</string>
+    <string name="_6_7_km">Distance:6.7 km</string>
     <string name="speed_3_4_km_h">Speed: 0.0 km/h</string>
-    <string name="speed">speed</string>
+    <string name="speed">Speed</string>
     <string name="timer_des">timer_des</string>
     <string name="time_00_00_00_m">Time: 00:00:00 m</string>
     <string name="delete">delete</string>
