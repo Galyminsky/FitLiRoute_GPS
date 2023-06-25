@@ -28,7 +28,7 @@
         android:contentDescription="@string/myLocation"
         android:focusable="true"
         android:src="@drawable/ic_loc"
-        app:backgroundTint="@color/grey_dark"
+        app:backgroundTint="@color/grey_light"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent" />
 
