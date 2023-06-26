@@ -231,7 +231,7 @@ class MainFragment : Fragment() {
             PreferenceManager.getDefaultSharedPreferences(requireContext())
                 .getString("color_key", "#FA2C2C")
         )
-        map.controller.setZoom(20.0)
+        map.controller.setZoom(18.0)
         //map.controller.animateTo(GeoPoint(52.54735, 62.50001))
         val mLocProvider = GpsMyLocationProvider(activity)
         mLocOverlay = MyLocationNewOverlay(mLocProvider, map)
