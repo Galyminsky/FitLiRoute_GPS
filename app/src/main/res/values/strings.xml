@@ -24,17 +24,12 @@
     <string name="myLocation">MyLocation</string>
 
     //Dialog
-    <string name="velocity_dialog">Velocity:</string>
-    <string name="distance_dialog">Distance:</string>
+    <string name="velocity_dialog">Velocity: </string>
+    <string name="distance_dialog">Distance: </string>
     <string name="save_dialog_btn">Save</string>
     <string name="cancel_dialog_btn">Cancel</string>
     <string name="save_this_track_dialog">Save this track?</string>
-    <string name="time_dialog">Time:</string>
-
-    <string name="empty">EMPTY</string>
-    <string name="speed">Speed</string>
-    <string name="timer_des">timer_des</string>
-    <string name="delete">delete</string>
+    <string name="time_dialog">Time: </string>
 
     //MainFragment
     <string name="tvTime">Time:</string>
@@ -47,11 +42,20 @@
     <string name="ti_distance">Distance:</string>
     <string name="ti_speed">Speed:</string>
     <string name="ti_time">Time:</string>
+    <string name="ti_desc_speed">ti_desc_speed</string>
+    <string name="ti_desc_timer">ti_desc_timer</string>
+    <string name="ti_desc_ic_delete">ti_desc_ic_delete</string>
 
     //FragmentViewTrack
     <string name="fvt_average_velosity">Average Velosity:</string>
     <string name="fvt_time">Time:</string>
     <string name="fvt_distance">Distance:</string>
     <string name="fvt_date">Date:</string>
+
+    //FragmentTrack
+    <string name="ft_txt_emty">Empty</string>
+    <string name="show_track_saved">Track Saved!</string>
+    <string name="show_gps_enabled">GPS Enabled!</string>
+    <string name="show_loc_not_accessed">Location not accessed!</string>
 
 </resources>

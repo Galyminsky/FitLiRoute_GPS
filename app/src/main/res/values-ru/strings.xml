@@ -25,33 +25,37 @@
     <string name="myLocation">Мое местоположение</string>
 
     //Dialog
-    <string name="velocity_dialog">Скорость:</string>
-    <string name="distance_dialog">Расстояние:</string>
+    <string name="velocity_dialog">Скорость: </string>
+    <string name="distance_dialog">Расстояние: </string>
     <string name="save_dialog_btn">Сохранить</string>
     <string name="cancel_dialog_btn">Отмена</string>
     <string name="save_this_track_dialog">Сохранить этот маршрут?</string>
-    <string name="time_dialog">Время:</string>
-
-    <string name="empty">ПУСТО</string>
-    <string name="speed">Скорость</string>
-    <string name="timer_des">timer_des</string>
-    <string name="delete">Удалить</string>
+    <string name="time_dialog">Время: </string>
 
     //MainFragment
-    <string name="tvTime">Время: 00:00:00 мин</string>
-    <string name="avVelocityLabel">Средняя скорость: 17.4 км/ч</string>
-    <string name="velocityLabel">Скорость: 24 км/ч</string>
-    <string name="distanceLabel">Расстояние: 47 км/ч</string>
+    <string name="tvTime">Время:</string>
+    <string name="avVelocityLabel">Средняя скорость:</string>
+    <string name="velocityLabel">Скорость:</string>
+    <string name="distanceLabel">Расстояние:</string>
 
     //TrackItem
-    <string name="ti_date">Дата: 26.06.2023</string>
-    <string name="ti_distance">Расстояние: 0.0 км</string>
-    <string name="ti_speed">Скорость: 14.7 км/ч</string>
-    <string name="ti_time">Время: 00:00:00 мин</string>
+    <string name="ti_date">Дата:</string>
+    <string name="ti_distance">Расстояние:</string>
+    <string name="ti_speed">Скорость:</string>
+    <string name="ti_time">Время:</string>
+    <string name="ti_desc_speed">ti_desc_speed</string>
+    <string name="ti_desc_timer">ti_desc_timer</string>
+    <string name="ti_desc_ic_delete">ti_desc_ic_delete</string>
 
     //FragmentViewTrack
-    <string name="fvt_average_velosity">Средняя скорость: 0 км/ч</string>
-    <string name="fvt_time">Время: 00:00:00 мин</string>
-    <string name="fvt_distance">Расстояние: 0.0 км</string>
-    <string name="fvt_date">Дата: 26.06.2023</string>
+    <string name="fvt_average_velosity">Средняя скорость:</string>
+    <string name="fvt_time">Время:</string>
+    <string name="fvt_distance">Расстояние:</string>
+    <string name="fvt_date">Дата:</string>
+
+    //FragmentTrack
+    <string name="ft_txt_emty">Пусто</string>
+    <string name="show_track_saved">Трек сохранен!</string>
+    <string name="show_gps_enabled">GPS включен!</string>
+    <string name="show_loc_not_accessed">Нет доступа к местоположению!</string>
 </resources>

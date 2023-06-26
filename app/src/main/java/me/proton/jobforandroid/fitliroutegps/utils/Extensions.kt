@@ -26,8 +26,9 @@ fun AppCompatActivity.openFragment(f: Fragment) {
         .commit()
 }
 
-fun Fragment.showToast(s: String) {
-    Toast.makeText(activity, s, Toast.LENGTH_SHORT).show()
+fun Fragment.showToast(resId: Int) {
+    val message = getString(resId)
+    Toast.makeText(activity, message, Toast.LENGTH_SHORT).show()
 }
 
 fun AppCompatActivity.showToast(s: String) {

@@ -51,7 +51,7 @@
             app:layout_constraintStart_toStartOf="@+id/tvDate"
             app:layout_constraintTop_toBottomOf="@+id/tvDate"
             app:srcCompat="@drawable/ic_speed"
-            android:contentDescription="@string/speed" />
+            android:contentDescription="@string/ti_desc_speed" />
 
         <TextView
             android:id="@+id/tvVelocity"
@@ -78,7 +78,7 @@
             app:layout_constraintStart_toStartOf="@+id/imageView"
             app:layout_constraintTop_toBottomOf="@+id/imageView"
             app:srcCompat="@drawable/ic_timer"
-            android:contentDescription="@string/timer_des" />
+            android:contentDescription="@string/ti_desc_timer" />
 
         <TextView
             android:id="@+id/tvTime"
@@ -104,7 +104,7 @@
             android:layout_marginEnd="10dp"
             android:layout_marginBottom="10dp"
             android:background="@null"
-            android:contentDescription="@string/delete"
+            android:contentDescription="@string/ti_desc_ic_delete"
             app:layout_constraintBottom_toBottomOf="@+id/tvTime"
             app:layout_constraintEnd_toEndOf="@+id/tvDistance"
             app:layout_constraintStart_toStartOf="@+id/tvDistance"
