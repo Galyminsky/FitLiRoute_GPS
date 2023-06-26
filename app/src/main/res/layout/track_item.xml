@@ -25,7 +25,7 @@
             android:layout_marginStart="10dp"
             android:layout_marginTop="10dp"
             android:fontFamily="@font/acme"
-            android:text="@string/_02_03_2023_9_00"
+            android:text="@string/ti_date"
             android:textColor="@color/grey_dark"
             android:textSize="16sp"
             app:layout_constraintStart_toStartOf="parent"
@@ -37,7 +37,7 @@
             android:layout_height="wrap_content"
             android:layout_marginEnd="10dp"
             android:fontFamily="@font/acme"
-            android:text="@string/_6_7_km"
+            android:text="@string/ti_distance"
             android:textColor="@color/grey_dark"
             android:textSize="30sp"
             app:layout_constraintEnd_toEndOf="parent"
@@ -51,7 +51,7 @@
             app:layout_constraintStart_toStartOf="@+id/tvDate"
             app:layout_constraintTop_toBottomOf="@+id/tvDate"
             app:srcCompat="@drawable/ic_speed"
-            android:contentDescription="@string/speed" />
+            android:contentDescription="@string/ti_desc_speed" />
 
         <TextView
             android:id="@+id/tvVelocity"
@@ -61,7 +61,7 @@
             android:layout_marginTop="10dp"
             android:layout_marginBottom="10dp"
             android:fontFamily="@font/acme"
-            android:text="@string/speed_3_4_km_h"
+            android:text="@string/ti_speed"
             android:textColor="@color/grey_dark"
             android:textSize="15sp"
             app:layout_constraintBottom_toBottomOf="@+id/imageView"
@@ -78,7 +78,7 @@
             app:layout_constraintStart_toStartOf="@+id/imageView"
             app:layout_constraintTop_toBottomOf="@+id/imageView"
             app:srcCompat="@drawable/ic_timer"
-            android:contentDescription="@string/timer_des" />
+            android:contentDescription="@string/ti_desc_timer" />
 
         <TextView
             android:id="@+id/tvTime"
@@ -88,7 +88,7 @@
             android:layout_marginTop="10dp"
             android:layout_marginBottom="10dp"
             android:fontFamily="@font/acme"
-            android:text="@string/time_00_00_00_m"
+            android:text="@string/ti_time"
             android:textColor="@color/grey_dark"
             android:textSize="15sp"
             app:layout_constraintBottom_toBottomOf="@+id/imageView2"
@@ -104,7 +104,7 @@
             android:layout_marginEnd="10dp"
             android:layout_marginBottom="10dp"
             android:background="@null"
-            android:contentDescription="@string/delete"
+            android:contentDescription="@string/ti_desc_ic_delete"
             app:layout_constraintBottom_toBottomOf="@+id/tvTime"
             app:layout_constraintEnd_toEndOf="@+id/tvDistance"
             app:layout_constraintStart_toStartOf="@+id/tvDistance"

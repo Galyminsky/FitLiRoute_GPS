@@ -53,5 +53,4 @@ class SettingsFragment : PreferenceFragmentCompat() {
         val trackColor = pref?.getString("color_key", "#FA2C2C")
         colorPref.icon?.setTint(Color.parseColor(trackColor))
     }
-
 }

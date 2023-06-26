@@ -169,7 +169,7 @@ class MainFragment : Fragment() {
                 track,
                 object : DialogManager.Listener {
                     override fun onClick() {
-                        showToast("Track Saved!")
+                        showToast(R.string.show_track_saved)
                         model.insertTrack(track)
                     }
                 })
@@ -252,7 +252,7 @@ class MainFragment : Fragment() {
                 initOsm()
                 checkLocationEnabled()
             } else {
-                showToast("Location not accessed")
+                showToast(R.string.show_loc_not_accessed)
             }
         }
         pLauncher.launch(arrayOf(Manifest.permission.ACCESS_FINE_LOCATION))
@@ -309,7 +309,7 @@ class MainFragment : Fragment() {
                     }
                 })
         } else {
-            showToast("GPS enabled!")
+            showToast(R.string.show_gps_enabled)
         }
     }
 

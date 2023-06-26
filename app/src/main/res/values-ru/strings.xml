@@ -1,0 +1,61 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_name">Fit Li Route GPS</string>
+
+    //MainActivity
+    <string name="home_menu">Главная</string>
+    <string name="setting_menu">Настройки</string>
+    <string name="tracks">Маршруты</string>
+
+    //Settings
+    <string name="location">Настройки местоположения</string>
+    <string name="truck_color">Цвет маршрута</string>
+    <string name="truck_color_summary">Выберите цвет маршрута</string>
+    <string name="update_time">Время обновления</string>
+    <string name="update_time_summary">Время обновления местоположения</string>
+    <string name="truck_color_category">Цвет маршрута</string>
+    <string name="update_time_category">Время обновления</string>
+
+    //GPS
+    <string name="location_disabled">Местоположение отключено</string>
+    <string name="location_dialog_message">Хотите включить GPS?</string>
+    <string name="location_bnt_yes">Да</string>
+    <string name="location_bnt_no">Нет</string>
+    <string name="play_btn">Воспроизвести</string>
+    <string name="myLocation">Мое местоположение</string>
+
+    //Dialog
+    <string name="velocity_dialog">Скорость: </string>
+    <string name="distance_dialog">Расстояние: </string>
+    <string name="save_dialog_btn">Сохранить</string>
+    <string name="cancel_dialog_btn">Отмена</string>
+    <string name="save_this_track_dialog">Сохранить этот маршрут?</string>
+    <string name="time_dialog">Время: </string>
+
+    //MainFragment
+    <string name="tvTime">Время:</string>
+    <string name="avVelocityLabel">Средняя скорость:</string>
+    <string name="velocityLabel">Скорость:</string>
+    <string name="distanceLabel">Расстояние:</string>
+
+    //TrackItem
+    <string name="ti_date">Дата:</string>
+    <string name="ti_distance">Расстояние:</string>
+    <string name="ti_speed">Скорость:</string>
+    <string name="ti_time">Время:</string>
+    <string name="ti_desc_speed">ti_desc_speed</string>
+    <string name="ti_desc_timer">ti_desc_timer</string>
+    <string name="ti_desc_ic_delete">ti_desc_ic_delete</string>
+
+    //FragmentViewTrack
+    <string name="fvt_average_velosity">Средняя скорость:</string>
+    <string name="fvt_time">Время:</string>
+    <string name="fvt_distance">Расстояние:</string>
+    <string name="fvt_date">Дата:</string>
+
+    //FragmentTrack
+    <string name="ft_txt_emty">Пусто</string>
+    <string name="show_track_saved">Трек сохранен!</string>
+    <string name="show_gps_enabled">GPS включен!</string>
+    <string name="show_loc_not_accessed">Нет доступа к местоположению!</string>
+</resources>

@@ -1,16 +1,22 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
     <string name="app_name">Fit Li Route GPS</string>
+
+    //MainActivity
     <string name="home_menu">Home</string>
     <string name="setting_menu">Setting</string>
     <string name="tracks">Tracks</string>
 
+    //Settings
     <string name="location">LOCATION SETTINGS</string>
     <string name="truck_color">Track color</string>
     <string name="truck_color_summary">Choose track color</string>
     <string name="update_time">Update Time</string>
     <string name="update_time_summary">Location update time </string>
+    <string name="truck_color_category">Track Color</string>
+    <string name="update_time_category">Update Time</string>
 
+    //GPS
     <string name="location_disabled">Location disabled</string>
     <string name="location_dialog_message">Do you want enabled GPS?</string>
     <string name="location_bnt_yes">Yes</string>
@@ -18,33 +24,39 @@
     <string name="play_btn">play</string>
     <string name="myLocation">MyLocation</string>
 
-    <string name="tvTime">Time:</string>
-    <string name="distanceLabel">Distance:</string>
-    <string name="velocityLabel">Velocity:</string>
-    <string name="avVelocityLabel">Average Velocity:</string>
-    <string name="save_this_track_dialog">Save this track?</string>
-    <string name="time_dialog">Time:</string>
-    <string name="velocity_dialog">Velocity:</string>
-    <string name="distance_dialog">Distance:</string>
+    //Dialog
+    <string name="velocity_dialog">Velocity: </string>
+    <string name="distance_dialog">Distance: </string>
     <string name="save_dialog_btn">Save</string>
     <string name="cancel_dialog_btn">Cancel</string>
-    <string name="time_00_24_24_fake">Time: 00:00:00</string>
-    <string name="average_velosity_3_5_km_h_fake">Average velosity: 0.0 kmh</string>
-    <string name="velosity_3_5km_h_fake">Velosity: 0.0 km/h</string>
-    <string name="distance_16_5_km_fake">Distance: 0.0 km</string>
-    <string name="fragment_settings_fake">FRAGMENT SETTINGS</string>
-    <string name="fragment_tracks_fake">FRAGMENT TRACKS</string>
-    <string name="fragment_view_track_fake">FRAGMENT VIEW TRACK</string>
-    <string name="truck_color_category">Track Color</string>
-    <string name="update_time_category">Update Time</string>
-    <string name="empty">EMPTY</string>
-    <string name="date_02_03_2023">Date: 02.03.2023</string>
-    <string name="_02_03_2023_9_00">02.03.2023 9:00</string>
-    <string name="_6_7_km">6.7 km</string>
-    <string name="speed_3_4_km_h">Speed: 0.0 km/h</string>
-    <string name="speed">speed</string>
-    <string name="timer_des">timer_des</string>
-    <string name="time_00_00_00_m">Time: 00:00:00 m</string>
-    <string name="delete">delete</string>
+    <string name="save_this_track_dialog">Save this track?</string>
+    <string name="time_dialog">Time: </string>
+
+    //MainFragment
+    <string name="tvTime">Time:</string>
+    <string name="avVelocityLabel">Average velosity:</string>
+    <string name="velocityLabel">Velosity:</string>
+    <string name="distanceLabel">Distance:</string>
+
+    //TrackItem
+    <string name="ti_date">Date:</string>
+    <string name="ti_distance">Distance:</string>
+    <string name="ti_speed">Speed:</string>
+    <string name="ti_time">Time:</string>
+    <string name="ti_desc_speed">ti_desc_speed</string>
+    <string name="ti_desc_timer">ti_desc_timer</string>
+    <string name="ti_desc_ic_delete">ti_desc_ic_delete</string>
+
+    //FragmentViewTrack
+    <string name="fvt_average_velosity">Average Velosity:</string>
+    <string name="fvt_time">Time:</string>
+    <string name="fvt_distance">Distance:</string>
+    <string name="fvt_date">Date:</string>
+
+    //FragmentTrack
+    <string name="ft_txt_emty">Empty</string>
+    <string name="show_track_saved">Track Saved!</string>
+    <string name="show_gps_enabled">GPS Enabled!</string>
+    <string name="show_loc_not_accessed">Location not accessed!</string>
 
 </resources>
