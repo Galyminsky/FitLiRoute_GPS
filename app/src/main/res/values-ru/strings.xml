@@ -2,49 +2,56 @@
 <resources>
     <string name="app_name">Fit Li Route GPS</string>
 
+    //MainActivity
     <string name="home_menu">Главная</string>
     <string name="setting_menu">Настройки</string>
-    <string name="tracks">Треки</string>
+    <string name="tracks">Маршруты</string>
 
-    <string name="location">Настройки Местоположения</string>
-    <string name="truck_color">Цвет трека</string>
-    <string name="truck_color_summary">Выберите цвет трека</string>
+    //Settings
+    <string name="location">Настройки местоположения</string>
+    <string name="truck_color">Цвет маршрута</string>
+    <string name="truck_color_summary">Выберите цвет маршрута</string>
     <string name="update_time">Время обновления</string>
-    <string name="update_time_summary">Время обновления Местоположения</string>
+    <string name="update_time_summary">Время обновления местоположения</string>
+    <string name="truck_color_category">Цвет маршрута</string>
+    <string name="update_time_category">Время обновления</string>
 
+    //GPS
     <string name="location_disabled">Местоположение отключено</string>
     <string name="location_dialog_message">Хотите включить GPS?</string>
     <string name="location_bnt_yes">Да</string>
     <string name="location_bnt_no">Нет</string>
-    <string name="play_btn">Играть</string>
-    <string name="myLocation">Мое Местоположение</string>
+    <string name="play_btn">Воспроизвести</string>
+    <string name="myLocation">Мое местоположение</string>
 
-    <string name="tvTime">Время:</string>
-    <string name="distanceLabel">Расстояние:</string>
-    <string name="velocityLabel">Скорость:</string>
-    <string name="avVelocityLabel">Средняя скорость:</string>
-    <string name="save_this_track_dialog">Сохранить этот трек?</string>
-    <string name="time_dialog">Время:</string>
+    //Dialog
     <string name="velocity_dialog">Скорость:</string>
     <string name="distance_dialog">Расстояние:</string>
     <string name="save_dialog_btn">Сохранить</string>
     <string name="cancel_dialog_btn">Отмена</string>
-    <string name="time_00_24_24_fake">Время: 00:00:00</string>
-    <string name="average_velosity_3_5_km_h_fake">Средняя скорость: 0.0 км/ч</string>
-    <string name="velosity_3_5km_h_fake">Скорость: 0.0 км/ч</string>
-    <string name="distance_16_5_km_fake">Расстояние: 0.0 км</string>
-    <string name="fragment_settings_fake">Фрагмент настроек</string>
-    <string name="fragment_tracks_fake">Фрагмент треков</string>
-    <string name="fragment_view_track_fake">Фрагмент просмотра трека</string>
-    <string name="truck_color_category">Цвет трека</string>
-    <string name="update_time_category">Время обновления</string>
-    <string name="empty">Пусто</string>
-    <string name="date_02_03_2023">Дата: 02.03.2023</string>
-    <string name="_02_03_2023_9_00">02.03.2023 9:00</string>
-    <string name="_6_7_km">6.7 км</string>
-    <string name="speed_3_4_km_h">Скорость: 0.0 км/ч</string>
+    <string name="save_this_track_dialog">Сохранить этот маршрут?</string>
+    <string name="time_dialog">Время:</string>
+
+    <string name="empty">ПУСТО</string>
     <string name="speed">Скорость</string>
-    <string name="timer_des">описание таймера</string>
-    <string name="time_00_00_00_m">Время: 00:00:00 м</string>
-    <string name="delete">удалить</string>
+    <string name="timer_des">timer_des</string>
+    <string name="delete">Удалить</string>
+
+    //MainFragment
+    <string name="tvTime">Время: 00:00:00 мин</string>
+    <string name="avVelocityLabel">Средняя скорость: 17.4 км/ч</string>
+    <string name="velocityLabel">Скорость: 24 км/ч</string>
+    <string name="distanceLabel">Расстояние: 47 км/ч</string>
+
+    //TrackItem
+    <string name="ti_date">Дата: 26.06.2023</string>
+    <string name="ti_distance">Расстояние: 0.0 км</string>
+    <string name="ti_speed">Скорость: 14.7 км/ч</string>
+    <string name="ti_time">Время: 00:00:00 мин</string>
+
+    //FragmentViewTrack
+    <string name="fvt_average_velosity">Средняя скорость: 0 км/ч</string>
+    <string name="fvt_time">Время: 00:00:00 мин</string>
+    <string name="fvt_distance">Расстояние: 0.0 км</string>
+    <string name="fvt_date">Дата: 26.06.2023</string>
 </resources>

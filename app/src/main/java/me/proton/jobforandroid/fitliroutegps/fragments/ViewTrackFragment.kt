@@ -48,7 +48,7 @@ class ViewTrackFragment : Fragment() {
 
     private fun getTrack() = with(binding) {
         model.currentTrack.observe(viewLifecycleOwner) {
-            val speed = "Average Speed: ${it.speed} km/h"
+            val speed = "Average Speed: ${it.speed}"
             val distance = "Distance: ${it.distance} km"
             val date = "Date: ${it.date}"
             tvData.text = date

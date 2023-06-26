@@ -76,7 +76,7 @@
                 android:backgroundTint="#4DFFFFFF"
                 android:fontFamily="@font/acme"
                 android:padding="5dp"
-                android:text="@string/time_00_24_24_fake"
+                android:text="@string/tvTime"
                 android:textColor="@color/black"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toTopOf="parent" />
@@ -89,7 +89,7 @@
                 android:layout_marginTop="5dp"
                 android:fontFamily="@font/acme"
                 android:padding="5dp"
-                android:text="@string/average_velosity_3_5_km_h_fake"
+                android:text="@string/avVelocityLabel"
                 android:textColor="@color/black"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toBottomOf="@+id/tvTime" />
@@ -103,7 +103,7 @@
                 android:backgroundTint="#4DFFFFFF"
                 android:fontFamily="@font/acme"
                 android:padding="5dp"
-                android:text="@string/velosity_3_5km_h_fake"
+                android:text="@string/velocityLabel"
                 android:textColor="@color/black"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toBottomOf="@+id/tvAveragaVel" />
@@ -119,7 +119,7 @@
                 android:backgroundTint="#4DFFFFFF"
                 android:fontFamily="@font/acme"
                 android:padding="5dp"
-                android:text="@string/distance_16_5_km_fake"
+                android:text="@string/distanceLabel"
                 android:textColor="@color/black"
                 android:textSize="24sp"
                 app:layout_constraintBottom_toBottomOf="parent"
