@@ -1,6 +1,8 @@
 # FitLiRoute_GPS
 
-![COMPLETE1024-50000](https://github.com/Galyminsky/FitLiRoute_GPS/assets/82653197/0a79caf1-3d60-42d8-91b2-69e04920d465)
+![imgonline-com-ua-Transparent-backgr-1Fm6uBS9GBw2O](https://github.com/Galyminsky/FitLiRoute_GPS/assets/82653197/1d537022-6c21-4a74-8a47-23dbd290decf)
+
+
 
 Fit LiRoute GPS - незаменимое приложение для всех любителей бега и прогулок! С его помощью вы сможете записывать свои тренировки и отслеживать свои спортивные подвиги с помощью GPS. Забудьте о потерянных дорожках и сомнениях в пройденном расстоянии - наш трекер позаботится обо всем!
 
@@ -23,6 +25,9 @@ Fit LiRoute GPS - незаменимое приложение для всех л
 Не пропустите возможность стать звездой фитнес-мира с помощью "Fit LiRoute GPS"! Ваш путь к физическому совершенству начинается здесь и сейчас.
 
 
-![Screenshot_2023-06-26-13-46-59-834_me proton jobforandroid fitliroutegps](https://github.com/Galyminsky/FitLiRoute_GPS/assets/82653197/de3cdf52-9b6b-47f8-bc62-8d2aaeb0be00)
-![Screenshot_2023-06-26-13-47-21-736_me proton jobforandroid fitliroutegps](https://github.com/Galyminsky/FitLiRoute_GPS/assets/82653197/4bd76ff4-308d-44ca-a6a8-c3f23344dde3)
-![Screenshot_2023-06-26-13-47-33-534_me proton jobforandroid fitliroutegps](https://github.com/Galyminsky/FitLiRoute_GPS/assets/82653197/18173126-04e3-4487-8885-0b2ebd980c48)
+![Screenshot_2023-09-21-13-34-59-779_me proton jobforandroid fitliroutegps](https://github.com/Galyminsky/FitLiRoute_GPS/assets/82653197/02f88f21-c3ad-4fdb-8d89-972b75b38a1e)
+![Screenshot_2023-09-21-13-34-52-650_me proton jobforandroid fitliroutegps](https://github.com/Galyminsky/FitLiRoute_GPS/assets/82653197/a6c3211f-8c1c-4f34-b253-e16c440946ab)
+![Screenshot_2023-09-21-13-34-37-409_me proton jobforandroid fitliroutegps](https://github.com/Galyminsky/FitLiRoute_GPS/assets/82653197/de7580f4-acf5-4381-a159-d71f226d1204)
+![Screenshot_2023-09-21-13-34-33-260_me proton jobforandroid fitliroutegps](https://github.com/Galyminsky/FitLiRoute_GPS/assets/82653197/d83a2040-72c9-4618-84e9-2b9368bf20ed)
+![Screenshot_2023-09-21-13-34-07-850_me proton jobforandroid fitliroutegps](https://github.com/Galyminsky/FitLiRoute_GPS/assets/82653197/3d62f990-2da4-413e-9715-8853a89fd338)
+![Screenshot_2023-09-21-13-33-18-728_me proton jobforandroid fitliroutegps](https://github.com/Galyminsky/FitLiRoute_GPS/assets/82653197/620b1695-02f2-4051-ba12-733ea39c0850)
