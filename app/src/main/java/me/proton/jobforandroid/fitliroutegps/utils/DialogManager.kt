@@ -11,7 +11,7 @@ import me.proton.jobforandroid.fitliroutegps.db.TrackItem
 
 object DialogManager {
 
-    fun showLocEnabledDialog(context: Context, listener: Listener) {
+    fun showLocEnabledDialog(context: Context, listener: Listener): AlertDialog {
         val builder = AlertDialog.Builder(context)
         val dialog = builder.create()
         dialog.setTitle(R.string.location_disabled)
@@ -32,6 +32,7 @@ object DialogManager {
 
         }
         dialog.show()
+        return dialog
     }
 
     fun showSaveDialog(context: Context, item: TrackItem?, listener: Listener) {

@@ -1,6 +1,7 @@
 package me.proton.jobforandroid.fitliroutegps.fragments
 
 import android.Manifest
+import android.app.AlertDialog
 import android.content.BroadcastReceiver
 import android.content.Context
 import android.content.Intent
@@ -17,7 +18,6 @@ import android.view.View.OnClickListener
 import android.view.ViewGroup
 import androidx.activity.result.ActivityResultLauncher
 import androidx.activity.result.contract.ActivityResultContracts
-import androidx.annotation.RequiresApi
 import androidx.appcompat.app.AppCompatActivity
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
@@ -47,6 +47,8 @@ class MainFragment : Fragment() {
     private var locationModel: LocationModel? = null
     private var pl: Polyline? = null
     private var isServiceRunning = false
+    private var lastGpsEnabledState: Boolean? = null
+    private var gpsDialog: AlertDialog? = null
     private var firstStart = true
     private var timer: Timer? = null
     private var startTime = 0L
@@ -72,6 +74,7 @@ class MainFragment : Fragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         registerPermissions()
+        requestLocationPermissionIfNeeded()
         setOnClicks()
         checkServiceState()
         updateTime()
@@ -182,7 +185,7 @@ class MainFragment : Fragment() {
             null,
             getCurrentTime(),
             TimeUtils.getDate(),
-            String.format("%.1f", locationModel?.distance?.div(1000) ?: 0),
+            String.format("%.1f", locationModel?.distance?.div(1000) ?: 0.0f),
             getAverageVelocity(locationModel?.distance ?: 0.0f),
             geoPointsToString(locationModel?.geoPointsList ?: listOf()),
         )
@@ -209,7 +212,15 @@ class MainFragment : Fragment() {
 
     override fun onResume() {
         super.onResume()
-        checkLocPermission()
+        if (view != null && checkPermission(Manifest.permission.ACCESS_FINE_LOCATION)) {
+            checkLocationEnabled()
+        }
+    }
+
+    override fun onDestroyView() {
+        gpsDialog?.dismiss()
+        gpsDialog = null
+        super.onDestroyView()
     }
 
     override fun onAttach(context: Context) {
@@ -249,67 +260,51 @@ class MainFragment : Fragment() {
             ActivityResultContracts.RequestMultiplePermissions()
         ) {
             if (it[Manifest.permission.ACCESS_FINE_LOCATION] == true) {
-                initOsm()
-                checkLocationEnabled()
+                if (view != null && isAdded) {
+                    initOsm()
+                    checkLocationEnabled()
+                }
             } else {
-                showToast(R.string.show_loc_not_accessed)
+                if (view != null && isAdded) {
+                    showToast(R.string.show_loc_not_accessed)
+                }
             }
         }
-        pLauncher.launch(arrayOf(Manifest.permission.ACCESS_FINE_LOCATION))
     }
 
-    private fun checkLocPermission() {
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
-            checkPermissionAfter10()
-        } else {
-            checkPermissionBefore10()
-        }
-    }
-
-    @RequiresApi(Build.VERSION_CODES.Q)
-    private fun checkPermissionAfter10() {
-        if (checkPermission(Manifest.permission.ACCESS_FINE_LOCATION)
-            && checkPermission(Manifest.permission.ACCESS_BACKGROUND_LOCATION)
-        ) {
+    private fun requestLocationPermissionIfNeeded() {
+        if (checkPermission(Manifest.permission.ACCESS_FINE_LOCATION)) {
             initOsm()
             checkLocationEnabled()
         } else {
-            pLauncher.launch(
-                arrayOf(
-                    Manifest.permission.ACCESS_FINE_LOCATION,
-                    Manifest.permission.ACCESS_BACKGROUND_LOCATION
-                )
-            )
-        }
-    }
-
-    private fun checkPermissionBefore10() {
-        if (checkPermission(Manifest.permission.ACCESS_FINE_LOCATION)
-        ) {
-            initOsm()
-            checkLocationEnabled()
-        } else {
-            pLauncher.launch(
-                arrayOf(
-                    Manifest.permission.ACCESS_FINE_LOCATION
-                )
-            )
+            pLauncher.launch(arrayOf(Manifest.permission.ACCESS_FINE_LOCATION))
         }
     }
 
     private fun checkLocationEnabled() {
-        val lManager = activity?.getSystemService(Context.LOCATION_SERVICE) as LocationManager
+        val currentActivity = activity ?: return
+        val lManager = currentActivity.getSystemService(Context.LOCATION_SERVICE) as LocationManager
         val isEnabled = lManager.isProviderEnabled(LocationManager.GPS_PROVIDER)
+        val wasEnabled = lastGpsEnabledState
+        lastGpsEnabledState = isEnabled
+
         if (!isEnabled) {
-            DialogManager.showLocEnabledDialog(
-                activity as AppCompatActivity,
-                object : DialogManager.Listener {
-                    override fun onClick() {
-                        startActivity(Intent(Settings.ACTION_LOCATION_SOURCE_SETTINGS))
+            if (gpsDialog?.isShowing != true && view != null) {
+                gpsDialog = DialogManager.showLocEnabledDialog(
+                    currentActivity,
+                    object : DialogManager.Listener {
+                        override fun onClick() {
+                            startActivity(Intent(Settings.ACTION_LOCATION_SOURCE_SETTINGS))
+                        }
                     }
-                })
+                )
+            }
         } else {
-            showToast(R.string.show_gps_enabled)
+            gpsDialog?.dismiss()
+            gpsDialog = null
+            if (wasEnabled == false) {
+                showToast(R.string.show_gps_enabled)
+            }
         }
     }
 
