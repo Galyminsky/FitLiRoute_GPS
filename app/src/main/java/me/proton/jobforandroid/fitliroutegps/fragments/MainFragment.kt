@@ -49,7 +49,7 @@ class MainFragment : Fragment() {
     private var isServiceRunning = false
     private var lastGpsEnabledState: Boolean? = null
     private var gpsDialog: AlertDialog? = null
-    private var firstStart = true
+    private var isStopPending = false
     private var timer: Timer? = null
     private var startTime = 0L
     lateinit var mLocOverlay: MyLocationNewOverlay
@@ -173,7 +173,6 @@ class MainFragment : Fragment() {
         getValidGeoPoints(list).forEach {
             sb.append("${it.latitude},${it.longitude}/")
         }
-        Log.d("MyLog", "Points: $sb")
         return sb.toString()
     }
 
@@ -185,7 +184,7 @@ class MainFragment : Fragment() {
     }
 
     private fun startStopService() {
-        if (isServiceStarting) return
+        if (isServiceStarting || isStopPending) return
 
         if (!isServiceRunning) {
             if (!checkPermission(Manifest.permission.ACCESS_FINE_LOCATION)) {
@@ -203,32 +202,17 @@ class MainFragment : Fragment() {
             }
             startLocService(LocationService.hasRecoverableTrack(requireContext()))
         } else {
-            activity?.stopService(Intent(activity, LocationService::class.java))
-            binding.fStartStop.setImageResource(R.drawable.ic_play)
-            binding.fStartStop.isEnabled = true
-            cancelTimer()
-            isServiceRunning = false
-            val track = getTrackItem()
-            val validPoints = getValidGeoPoints(locationModel?.geoPointsList ?: emptyList())
-            val elapsedMillis = System.currentTimeMillis() - startTime
-            if (validPoints.isEmpty() || elapsedMillis <= 0L) {
-                showToast(R.string.show_loc_not_accessed)
-            } else {
-                DialogManager.showSaveDialog(requireContext(),
-                    track,
-                    object : DialogManager.Listener {
-                        override fun onClick() {
-                            model.insertTrack(track) { saved ->
-                                if (isAdded) {
-                                    showToast(
-                                        if (saved) R.string.show_track_saved
-                                        else R.string.show_track_save_failed
-                                    )
-                                }
-                            }
-                        }
-                    }
+            isStopPending = true
+            binding.fStartStop.isEnabled = false
+            try {
+                activity?.startService(
+                    Intent(activity, LocationService::class.java)
+                        .setAction(LocationService.ACTION_STOP)
                 )
+            } catch (error: RuntimeException) {
+                isStopPending = false
+                binding.fStartStop.isEnabled = true
+                Log.e("MainFragment", "Unable to stop location service", error)
             }
         }
     }
@@ -242,6 +226,34 @@ class MainFragment : Fragment() {
             getAverageVelocity(locationModel?.distance ?: 0.0f),
             geoPointsToString(locationModel?.geoPointsList ?: listOf()),
         )
+    }
+
+    private fun finishSavingStoppedTrack(finalModel: LocationModel?) {
+        isStopPending = false
+        isServiceRunning = false
+        binding.fStartStop.setImageResource(R.drawable.ic_play)
+        binding.fStartStop.isEnabled = true
+        cancelTimer()
+        if (finalModel != null) {
+            locationModel = finalModel
+            model.locationUpdates.value = finalModel
+        }
+        val track = getTrackItem()
+        val validPoints = getValidGeoPoints(locationModel?.geoPointsList ?: emptyList())
+        val elapsedMillis = System.currentTimeMillis() - startTime
+        if (validPoints.isEmpty() || elapsedMillis <= 0L) {
+            showToast(R.string.show_loc_not_accessed)
+            return
+        }
+        DialogManager.showSaveDialog(requireContext(), track, object : DialogManager.Listener {
+            override fun onClick() {
+                model.insertTrack(track) { saved ->
+                    if (isAdded) showToast(
+                        if (saved) R.string.show_track_saved else R.string.show_track_save_failed
+                    )
+                }
+            }
+        })
     }
 
     private fun checkServiceState() {
@@ -258,6 +270,11 @@ class MainFragment : Fragment() {
     private fun startLocService(resume: Boolean) {
         val currentActivity = activity ?: return
         if (isServiceStarting || isServiceRunning) return
+
+        if (!resume) {
+            locationModel = null
+            pl?.setPoints(emptyList())
+        }
 
         isServiceStarting = true
         binding.fStartStop.isEnabled = false
@@ -416,14 +433,9 @@ class MainFragment : Fragment() {
                 startTimer()
             } else if (i?.action == LocationService.ACTION_RECORDING_FAILED) {
                 onLocationServiceStartFailed()
-            } else if (i?.action == LocationService.CURRENT_SPEED_INTENT) {
-                val speedMetersPerSecond = i.getFloatExtra(
-                    LocationService.CURRENT_SPEED_INTENT,
-                    0f
-                ).takeIf { it.isFinite() && it >= 0f } ?: 0f
-                val velocityLabel = getString(R.string.velocityLabel)
-                binding.tvVelosity.text =
-                    "$velocityLabel ${String.format("%.1f", 3.6 * speedMetersPerSecond)} km/h"
+            } else if (i?.action == LocationService.ACTION_RECORDING_STOPPED) {
+                val finalModel = i.getSerializableExtra(LocationService.LOC_MODEL_INTENT) as? LocationModel
+                finishSavingStoppedTrack(finalModel)
             }
         }
     }
@@ -432,30 +444,15 @@ class MainFragment : Fragment() {
         val locFilter = IntentFilter().apply {
             addAction(LocationService.LOC_MODEL_INTENT)
             addAction(LocationService.ACTION_RECORDING_STARTED)
+            addAction(LocationService.ACTION_RECORDING_STOPPED)
             addAction(LocationService.ACTION_RECORDING_FAILED)
-            addAction(LocationService.CURRENT_SPEED_INTENT)
         }
         LocalBroadcastManager.getInstance(activity as AppCompatActivity)
             .registerReceiver(receiver, locFilter)
     }
 
-    private fun addPoint(list: List<GeoPoint>) {
-        pl?.addPoint(list[list.size - 1])
-    }
-
-    private fun fillPolyline(list: List<GeoPoint>) {
-        list.forEach {
-            pl?.addPoint(it)
-        }
-    }
-
     private fun updatePolyline(list: List<GeoPoint>) {
-        if (list.size > 1 && firstStart) {
-            fillPolyline(list)
-            firstStart = false
-        } else {
-            addPoint(list)
-        }
+        pl?.setPoints(list)
     }
 
     companion object {

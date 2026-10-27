@@ -1,0 +1,38 @@
+﻿Fit LiRoute GPS test Logcat capture
+Captured without clearing the device Logcat buffer.
+Relevant tags only: GPS_DIAG, FusedLocation, LocationService, MainFragment, AndroidRuntime.
+No recording-session markers were present in these log tags; use timestamps to correlate records with each test.
+
+10-27 05:51:59.862  3184  5807 I FusedLocation: (REDACTED) location delivery to %s blocked - too fast
+10-27 05:51:59.865  3184  5807 I FusedLocation: (REDACTED) location delivery to %s blocked - too close
+10-27 05:51:59.869  3184  5807 I FusedLocation: (REDACTED) location delivery to %s blocked - too close
+10-27 05:51:59.870  7633  7633 D GPS_DIAG: callback locations=1
+10-27 05:51:59.871  7633  7633 D GPS_DIAG: fixTimeMs=1793062315748 elapsedNs=39476463000000 lat=52.542444 lon=62.4943776 accuracyM=16.929 speedMps=0.033023257 rawDeltaM=0.46857867 anchorDeltaM=n/a decision=REBASE_TIME_GAP totalDistanceM=0.0
+10-27 05:52:08.938  3184  5807 I FusedLocation: (REDACTED) location delivery to %s blocked - too fast
+10-27 05:52:08.941  7633  7633 D GPS_DIAG: callback locations=1
+10-27 05:52:08.942  3184  5807 I FusedLocation: (REDACTED) location delivery to %s blocked - too close
+10-27 05:52:08.942  7633  7633 D GPS_DIAG: fixTimeMs=1793062325483 elapsedNs=39486197000000 lat=52.5424431 lon=62.4943831 accuracyM=20.9 speedMps=0.020714857 rawDeltaM=0.38635257 anchorDeltaM=0.38635257 decision=REJECTED_BELOW_MOVEMENT_THRESHOLD totalDistanceM=0.0
+10-27 05:52:08.952  3184  5807 I FusedLocation: (REDACTED) location delivery to %s blocked - too close
+10-27 05:52:17.985  3184  5807 I FusedLocation: (REDACTED) location delivery to %s blocked - too fast
+10-27 05:52:17.988  3184  5807 I FusedLocation: (REDACTED) location delivery to %s blocked - too close
+10-27 05:52:17.990  7633  7633 D GPS_DIAG: callback locations=1
+10-27 05:52:17.990  7633  7633 D GPS_DIAG: fixTimeMs=1793062333833 elapsedNs=39494548000000 lat=52.5424401 lon=62.4943845 accuracyM=13.292 speedMps=0.028563583 rawDeltaM=0.34708232 anchorDeltaM=0.6383463 decision=REJECTED_BELOW_MOVEMENT_THRESHOLD totalDistanceM=0.0
+10-27 05:52:17.994  3184  5807 I FusedLocation: (REDACTED) location delivery to %s blocked - too close
+10-27 05:52:39.078  3184  5807 I FusedLocation: (REDACTED) location delivery to %s blocked - too fast
+10-27 05:52:39.079  3184  5807 I FusedLocation: (REDACTED) location delivery to %s blocked - too close
+10-27 05:52:39.084  3184  5807 I FusedLocation: (REDACTED) location delivery to %s blocked - too close
+10-27 05:52:59.936  3184  5807 I FusedLocation: (REDACTED) location delivery to %s blocked - too fast
+10-27 05:52:59.937  3184  5807 I FusedLocation: (REDACTED) location delivery to %s blocked - too close
+10-27 05:52:59.938  3184  5807 I FusedLocation: (REDACTED) location delivery to %s blocked - too close
+10-27 05:53:20.866  3184  5807 I FusedLocation: (REDACTED) location delivery to %s blocked - too fast
+10-27 05:53:20.867  3184  5807 I FusedLocation: (REDACTED) location delivery to %s blocked - too close
+10-27 05:53:20.869  3184  5807 I FusedLocation: (REDACTED) location delivery to %s blocked - too close
+10-27 05:53:41.730  3184  5807 I FusedLocation: (REDACTED) location delivery to %s blocked - too fast
+10-27 05:53:41.730  3184  5807 I FusedLocation: (REDACTED) location delivery to %s blocked - too close
+10-27 05:53:41.731  3184  5807 I FusedLocation: (REDACTED) location delivery to %s blocked - too close
+10-27 05:54:02.589  3184  5807 I FusedLocation: (REDACTED) location delivery to %s blocked - too fast
+10-27 05:54:02.589  3184  5807 I FusedLocation: (REDACTED) location delivery to %s blocked - too close
+10-27 05:54:02.590  3184  5807 I FusedLocation: (REDACTED) location delivery to %s blocked - too close
+10-27 05:54:23.544  3184  5807 I FusedLocation: (REDACTED) location delivery to %s blocked - too fast
+10-27 05:54:23.545  3184  5807 I FusedLocation: (REDACTED) location delivery to %s blocked - too close
+10-27 05:54:23.550  3184  5807 I FusedLocation: (REDACTED) location delivery to %s blocked - too close

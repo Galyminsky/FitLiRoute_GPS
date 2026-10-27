@@ -11,6 +11,7 @@ import android.content.pm.PackageManager
 import android.location.Location
 import android.location.LocationManager
 import android.os.Build
+import android.os.Handler
 import android.os.IBinder
 import android.os.Looper
 import android.os.SystemClock
@@ -20,21 +21,24 @@ import androidx.core.app.ActivityCompat
 import androidx.core.app.NotificationCompat
 import androidx.localbroadcastmanager.content.LocalBroadcastManager
 import com.google.android.gms.location.FusedLocationProviderClient
+import com.google.android.gms.location.CurrentLocationRequest
 import com.google.android.gms.location.LocationCallback
 import com.google.android.gms.location.LocationRequest
 import com.google.android.gms.location.LocationResult
 import com.google.android.gms.location.LocationServices
 import com.google.android.gms.location.Priority.PRIORITY_HIGH_ACCURACY
+import com.google.android.gms.tasks.CancellationTokenSource
 import me.proton.jobforandroid.fitliroutegps.MainActivity
 import me.proton.jobforandroid.fitliroutegps.R
 import org.osmdroid.util.GeoPoint
 import kotlin.math.hypot
 
-private const val MAX_LOCATION_ACCURACY_METERS = 25f
-private const val MIN_MOVEMENT_THRESHOLD_METERS = 2f
-private const val MOVEMENT_UNCERTAINTY_MULTIPLIER = 1.5f
+private const val MAX_LOCATION_AGE_SECONDS = 15.0
+private const val MIN_MOVEMENT_THRESHOLD_METERS = 3f
+private const val MAX_MOVEMENT_THRESHOLD_METERS = 8f
 private const val MAX_PLAUSIBLE_SPEED_METERS_PER_SECOND = 12.0
 private const val MAX_CONTIGUOUS_GAP_SECONDS = 30.0
+private const val STOP_FIX_TIMEOUT_MS = 4_000L
 
 private fun isValidCoordinate(latitude: Double, longitude: Double): Boolean {
     return latitude.isFinite() && longitude.isFinite() &&
@@ -50,6 +54,11 @@ class LocationService : Service() {
     private var recordingStartTime = 0L
     private var startRequestPending = false
     private var isStopping = false
+    private var stopRequested = false
+    private var stopCompleted = false
+    private val stopHandler = Handler(Looper.getMainLooper())
+    private var stopTimeout: Runnable? = null
+    private var lastRouteSpeed = 0f
     private var restoredTrack = false
     private var needsFreshBaseline = false
     private var preserveRecoveryStateOnDestroy = false
@@ -62,6 +71,10 @@ class LocationService : Service() {
 
     @RequiresPermission(allOf = [Manifest.permission.ACCESS_FINE_LOCATION, Manifest.permission.ACCESS_COARSE_LOCATION])
     override fun onStartCommand(intent: Intent?, flags: Int, startId: Int): Int {
+        if (intent?.action == ACTION_STOP) {
+            requestStop(startId)
+            return START_NOT_STICKY
+        }
         if (isRunning) {
             sendServiceEvent(ACTION_RECORDING_STARTED)
             return START_STICKY
@@ -129,6 +142,7 @@ class LocationService : Service() {
 
     override fun onDestroy() {
         isStopping = true
+        stopTimeout?.let(stopHandler::removeCallbacks)
         isRunning = false
         startRequestPending = false
         locProvider.removeLocationUpdates(locCallBack)
@@ -145,7 +159,7 @@ class LocationService : Service() {
         }
     }
 
-    private fun processLocation(currentLocation: Location) {
+    private fun processLocation(currentLocation: Location, finalFix: Boolean = false) {
         val previousObserved = lastObservedLocation
         val distanceToPreviousFix = previousObserved
             ?.takeIf {
@@ -158,13 +172,12 @@ class LocationService : Service() {
         var decision = "UNCLASSIFIED"
         var distanceFromAnchorForLog: Float? = null
         try {
-            if (isStopping) {
+            if (isStopping && !finalFix) {
                 decision = "IGNORED_STOPPING"
                 return
             }
-            sendCurrentSpeed(currentLocation.speed)
-            if (!hasUsableAccuracy(currentLocation)) {
-                decision = "REJECTED_INVALID_OR_INACCURATE"
+            if (!isUsableFix(currentLocation)) {
+                decision = "REJECTED_INVALID_OR_STALE"
                 return
             }
 
@@ -175,8 +188,11 @@ class LocationService : Service() {
                 if (geoPointsList.isEmpty()) {
                     geoPointsList.add(GeoPoint(currentLocation.latitude, currentLocation.longitude))
                 }
+                lastRouteSpeed = currentLocation.speed.takeIf {
+                    currentLocation.hasSpeed() && it.isFinite() && it >= 0f
+                } ?: 0f
                 persistTrack()
-                sendLocData(LocationModel(currentLocation.speed, distance, ArrayList(geoPointsList)))
+                sendLocData(currentSnapshot())
                 decision = "BASELINE"
                 return
             }
@@ -195,7 +211,6 @@ class LocationService : Service() {
 
             val distanceFromAnchor = anchor.distanceTo(currentLocation)
             distanceFromAnchorForLog = distanceFromAnchor
-            val uncertainty = combinedAccuracyMeters(anchor, currentLocation)
             val maximumPlausibleDistance =
                 MAX_PLAUSIBLE_SPEED_METERS_PER_SECOND * elapsedSeconds
             if (!distanceFromAnchor.isFinite() || distanceFromAnchor > maximumPlausibleDistance) {
@@ -204,13 +219,40 @@ class LocationService : Service() {
                 return
             }
 
-            val movementThreshold = maxOf(
-                MIN_MOVEMENT_THRESHOLD_METERS,
-                uncertainty * MOVEMENT_UNCERTAINTY_MULTIPLIER
-            )
+            val movementThreshold = movementThreshold(anchor, currentLocation)
             val candidate = pendingLocation
             if (candidate == null) {
                 if (distanceFromAnchor > movementThreshold) {
+                    if (finalFix && previousObserved != null && isUsableFix(previousObserved)) {
+                        val previousElapsed =
+                            (previousObserved.elapsedRealtimeNanos - anchor.elapsedRealtimeNanos) /
+                                1_000_000_000.0
+                        val finalElapsed =
+                            (currentLocation.elapsedRealtimeNanos - previousObserved.elapsedRealtimeNanos) /
+                                1_000_000_000.0
+                        val previousDistance = anchor.distanceTo(previousObserved)
+                        val finalStep = previousObserved.distanceTo(currentLocation)
+                        val finalAccuracy = combinedAccuracyMeters(previousObserved, currentLocation)
+                        val finalProgress = maxOf(1f, minOf(3f, finalAccuracy * 0.05f))
+                        val finalStepThreshold = maxOf(1f, minOf(3f, finalAccuracy * 0.1f))
+                        val finalPairConfirmed = previousElapsed > 0.0 &&
+                            finalElapsed > 0.0 && finalElapsed <= MAX_CONTIGUOUS_GAP_SECONDS &&
+                            previousDistance > MIN_MOVEMENT_THRESHOLD_METERS &&
+                            previousDistance <= MAX_PLAUSIBLE_SPEED_METERS_PER_SECOND * previousElapsed &&
+                            distanceFromAnchor >= previousDistance + finalProgress &&
+                            finalStep >= finalStepThreshold &&
+                            finalStep <= MAX_PLAUSIBLE_SPEED_METERS_PER_SECOND * finalElapsed
+                        if (finalPairConfirmed) {
+                            appendAcceptedPoint(previousObserved)
+                            appendAcceptedPoint(currentLocation)
+                            lastRouteSpeed = acceptedSpeed(previousObserved, currentLocation)
+                            pendingLocation = null
+                            persistTrack()
+                            sendLocData(currentSnapshot())
+                            decision = "ACCEPTED_FINAL_PAIR"
+                            return
+                        }
+                    }
                     pendingLocation = Location(currentLocation)
                     decision = "PENDING_OVER_MOVEMENT_THRESHOLD"
                 } else {
@@ -224,28 +266,32 @@ class LocationService : Service() {
             val candidateElapsedSeconds =
                 (currentLocation.elapsedRealtimeNanos - candidate.elapsedRealtimeNanos) /
                     1_000_000_000.0
+            val requiredProgress = maxOf(1f, minOf(3f, candidateUncertainty * 0.05f))
             val movementContinuesAwayFromAnchor =
-                distanceFromAnchor >= anchor.distanceTo(candidate) - candidateUncertainty
-            val confirmationMovementThreshold = maxOf(1f, candidateUncertainty * 0.5f)
+                distanceFromAnchor >= anchor.distanceTo(candidate) + requiredProgress
+            val confirmationMovementThreshold = maxOf(1f, minOf(3f, candidateUncertainty * 0.1f))
             val candidateConfirmed = candidateToCurrent >= confirmationMovementThreshold &&
                 movementContinuesAwayFromAnchor && candidateElapsedSeconds > 0.0 &&
                 candidateToCurrent <= MAX_PLAUSIBLE_SPEED_METERS_PER_SECOND *
                 candidateElapsedSeconds
 
             if (candidateConfirmed) {
-                distance += anchor.distanceTo(candidate)
-                distanceAnchor = Location(candidate)
-                geoPointsList.add(GeoPoint(candidate.latitude, candidate.longitude))
+                appendAcceptedPoint(candidate)
                 pendingLocation = null
+                lastRouteSpeed = acceptedSpeed(anchor, candidate)
+                if (finalFix) {
+                    appendAcceptedPoint(currentLocation)
+                    lastRouteSpeed = acceptedSpeed(candidate, currentLocation)
+                    persistTrack()
+                    sendLocData(currentSnapshot())
+                    decision = "ACCEPTED_FINAL_PAIR"
+                    return
+                }
                 persistTrack()
-                sendLocData(LocationModel(currentLocation.speed, distance, ArrayList(geoPointsList)))
+                sendLocData(currentSnapshot())
 
                 val distanceAfterCandidate = distanceAnchor!!.distanceTo(currentLocation)
-                val nextThreshold = maxOf(
-                    MIN_MOVEMENT_THRESHOLD_METERS,
-                    combinedAccuracyMeters(distanceAnchor!!, currentLocation) *
-                        MOVEMENT_UNCERTAINTY_MULTIPLIER
-                )
+                val nextThreshold = movementThreshold(distanceAnchor!!, currentLocation)
                 if (distanceAfterCandidate > nextThreshold) {
                     pendingLocation = Location(currentLocation)
                 }
@@ -261,7 +307,6 @@ class LocationService : Service() {
             Log.d(
                 DIAGNOSTIC_TAG,
                 "fixTimeMs=${currentLocation.time} elapsedNs=${currentLocation.elapsedRealtimeNanos} " +
-                    "lat=${currentLocation.latitude} lon=${currentLocation.longitude} " +
                     "accuracyM=${if (currentLocation.hasAccuracy()) currentLocation.accuracy else "missing"} " +
                     "speedMps=${if (currentLocation.hasSpeed()) currentLocation.speed else "missing"} " +
                     "rawDeltaM=${distanceToPreviousFix ?: "n/a"} " +
@@ -271,11 +316,37 @@ class LocationService : Service() {
         }
     }
 
-    private fun hasUsableAccuracy(location: Location): Boolean {
+    private fun isUsableFix(location: Location): Boolean {
+        val ageSeconds = (SystemClock.elapsedRealtimeNanos() - location.elapsedRealtimeNanos) /
+            1_000_000_000.0
         return isValidCoordinate(location.latitude, location.longitude) &&
-            location.hasAccuracy() && location.accuracy.isFinite() &&
-            location.accuracy in 0f..MAX_LOCATION_ACCURACY_METERS &&
-            location.elapsedRealtimeNanos > 0L
+            location.elapsedRealtimeNanos > 0L && ageSeconds in 0.0..MAX_LOCATION_AGE_SECONDS &&
+            (!location.hasAccuracy() || (location.accuracy.isFinite() && location.accuracy >= 0f))
+    }
+
+    private fun effectiveAccuracy(location: Location): Float =
+        if (location.hasAccuracy() && location.accuracy.isFinite()) location.accuracy else 15f
+
+    private fun movementThreshold(first: Location, second: Location): Float {
+        val uncertainty = combinedAccuracyMeters(first, second)
+        return maxOf(MIN_MOVEMENT_THRESHOLD_METERS,
+            minOf(MAX_MOVEMENT_THRESHOLD_METERS, uncertainty * 0.2f))
+    }
+
+    private fun acceptedSpeed(first: Location, last: Location): Float {
+        if (last.hasSpeed() && last.speed.isFinite() && last.speed >= 0f) return last.speed
+        val seconds = (last.elapsedRealtimeNanos - first.elapsedRealtimeNanos) / 1_000_000_000.0
+        return if (seconds > 0.0) first.distanceTo(last) / seconds.toFloat() else 0f
+    }
+
+    private fun currentSnapshot() = LocationModel(lastRouteSpeed, distance, ArrayList(geoPointsList))
+
+    private fun appendAcceptedPoint(location: Location) {
+        val anchor = distanceAnchor ?: return
+        if (anchor.latitude == location.latitude && anchor.longitude == location.longitude) return
+        distance += anchor.distanceTo(location)
+        distanceAnchor = Location(location)
+        geoPointsList.add(GeoPoint(location.latitude, location.longitude))
     }
 
     private fun rebaseDistanceAnchor(location: Location) {
@@ -285,7 +356,49 @@ class LocationService : Service() {
     }
 
     private fun combinedAccuracyMeters(first: Location, second: Location): Float {
-        return hypot(first.accuracy.toDouble(), second.accuracy.toDouble()).toFloat()
+        return hypot(effectiveAccuracy(first).toDouble(), effectiveAccuracy(second).toDouble()).toFloat()
+    }
+
+    private fun requestStop(startId: Int) {
+        if (stopRequested) return
+        stopRequested = true
+        isStopping = true
+        stopTimeout = Runnable { finishStop(startId) }
+        stopHandler.postDelayed(stopTimeout!!, STOP_FIX_TIMEOUT_MS)
+        try {
+            locProvider.removeLocationUpdates(locCallBack)
+            locProvider.getCurrentLocation(
+                CurrentLocationRequest.Builder()
+                    .setPriority(PRIORITY_HIGH_ACCURACY)
+                    .build(),
+                CancellationTokenSource().token
+            ).addOnSuccessListener { location ->
+                if (stopCompleted) return@addOnSuccessListener
+                if (location != null) processLocation(location, finalFix = true)
+                finishStop(startId)
+            }.addOnFailureListener { error ->
+                Log.w(TAG, "Final location request failed", error)
+                finishStop(startId)
+            }
+        } catch (error: RuntimeException) {
+            Log.w(TAG, "Final location request failed", error)
+            finishStop(startId)
+        }
+    }
+
+    private fun finishStop(startId: Int) {
+        if (stopCompleted) return
+        stopCompleted = true
+        stopTimeout?.let(stopHandler::removeCallbacks)
+        stopTimeout = null
+        isStopping = true
+        isRunning = false
+        startRequestPending = false
+        locProvider.removeLocationUpdates(locCallBack)
+        val snapshot = currentSnapshot()
+        sendLocData(snapshot)
+        sendServiceEvent(ACTION_RECORDING_STOPPED, snapshot)
+        stopSelf(startId)
     }
 
     private fun beginNewTrack() {
@@ -381,15 +494,11 @@ class LocationService : Service() {
         LocalBroadcastManager.getInstance(applicationContext).sendBroadcast(intent)
     }
 
-    private fun sendCurrentSpeed(speedMetersPerSecond: Float) {
-        val intent = Intent(CURRENT_SPEED_INTENT)
-        intent.putExtra(CURRENT_SPEED_INTENT, speedMetersPerSecond)
-        LocalBroadcastManager.getInstance(applicationContext).sendBroadcast(intent)
-    }
-
-    private fun sendServiceEvent(action: String) {
+    private fun sendServiceEvent(action: String, snapshot: LocationModel? = null) {
+        val intent = Intent(action)
+        if (snapshot != null) intent.putExtra(LOC_MODEL_INTENT, snapshot)
         LocalBroadcastManager.getInstance(applicationContext)
-            .sendBroadcast(Intent(action))
+            .sendBroadcast(intent)
     }
 
     private fun buildNotification(title: String) = NotificationCompat.Builder(this, CHANNEL_ID)
@@ -434,10 +543,11 @@ class LocationService : Service() {
     companion object {
         const val CHANNEL_ID = "channel_1"
         const val LOC_MODEL_INTENT = "loc_intent"
-        const val CURRENT_SPEED_INTENT = "current_speed_intent"
         const val ACTION_START = "me.proton.jobforandroid.fitliroutegps.action.START_TRACK"
         const val ACTION_RESUME = "me.proton.jobforandroid.fitliroutegps.action.RESUME_TRACK"
+        const val ACTION_STOP = "me.proton.jobforandroid.fitliroutegps.action.STOP_TRACK"
         const val ACTION_RECORDING_STARTED = "me.proton.jobforandroid.fitliroutegps.action.TRACK_STARTED"
+        const val ACTION_RECORDING_STOPPED = "me.proton.jobforandroid.fitliroutegps.action.TRACK_STOPPED"
         const val ACTION_RECORDING_FAILED = "me.proton.jobforandroid.fitliroutegps.action.TRACK_START_FAILED"
 
         private const val TAG = "LocationService"
@@ -493,7 +603,7 @@ class LocationService : Service() {
                 val accuracy = preferences.getFloat(KEY_ANCHOR_ACCURACY, Float.NaN)
                 val elapsedRealtime = preferences.getLong(KEY_ANCHOR_ELAPSED_REALTIME, 0L)
                 if (!isValidCoordinate(latitude, longitude) || !accuracy.isFinite() ||
-                    accuracy !in 0f..MAX_LOCATION_ACCURACY_METERS || elapsedRealtime <= 0L
+                    accuracy < 0f || elapsedRealtime <= 0L
                 ) return null
 
                 Location("FitLiRouteGPS.restore").apply {
@@ -506,7 +616,7 @@ class LocationService : Service() {
                 Location("FitLiRouteGPS.legacy").apply {
                     latitude = points.last().latitude
                     longitude = points.last().longitude
-                    accuracy = MAX_LOCATION_ACCURACY_METERS
+                    accuracy = 15f
                     elapsedRealtimeNanos = SystemClock.elapsedRealtimeNanos()
                 }
             }
