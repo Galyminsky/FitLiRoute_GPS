@@ -57,10 +57,15 @@ class ViewTrackFragment : Fragment() {
             tvDistance.text = distance
 
             val polyline = getPolyline(it.geoPoints)
+            val points = polyline.actualPoints
+            if (points.isEmpty()) {
+                startPoint = null
+                return@observe
+            }
             map.overlays.add(polyline)
-            setMarkers(polyline.actualPoints)
-            goToStartPosition(polyline.actualPoints[0])
-            startPoint = polyline.actualPoints[0]
+            setMarkers(points)
+            goToStartPosition(points[0])
+            startPoint = points[0]
         }
     }
 
@@ -88,11 +93,16 @@ class ViewTrackFragment : Fragment() {
             PreferenceManager.getDefaultSharedPreferences(requireContext())
                 .getString("color_key", "#FA2C2C")
         )
-        val list = geoPoints.split("/")
-        list.forEach {
-            if (it.isEmpty()) return@forEach
-            val points = it.split(",")
-            polyline.addPoint(GeoPoint(points[0].toDouble(), points[1].toDouble()))
+        geoPoints.split("/").forEach { encodedPoint ->
+            val coordinates = encodedPoint.split(",")
+            if (coordinates.size != 2) return@forEach
+
+            val latitude = coordinates[0].toDoubleOrNull() ?: return@forEach
+            val longitude = coordinates[1].toDoubleOrNull() ?: return@forEach
+            if (!latitude.isFinite() || !longitude.isFinite()) return@forEach
+            if (latitude !in -90.0..90.0 || longitude !in -180.0..180.0) return@forEach
+
+            polyline.addPoint(GeoPoint(latitude, longitude))
         }
         return polyline
     }

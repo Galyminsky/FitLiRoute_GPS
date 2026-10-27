@@ -1,6 +1,7 @@
 package me.proton.jobforandroid.fitliroutegps.viewmodel
 
 import androidx.lifecycle.*
+import kotlinx.coroutines.CancellationException
 import kotlinx.coroutines.launch
 import me.proton.jobforandroid.fitliroutegps.db.MainDB
 import me.proton.jobforandroid.fitliroutegps.db.TrackItem
@@ -16,8 +17,16 @@ class MainViewModel(db: MainDB) : ViewModel() {
     val timeData = MutableLiveData<String>()
     val tracks = dao.getAllTracks().asLiveData()
 
-    fun insertTrack(trackItem: TrackItem) = viewModelScope.launch {
-        dao.insertTrack(trackItem)
+    fun insertTrack(trackItem: TrackItem, onResult: (Boolean) -> Unit) = viewModelScope.launch {
+        val saved = try {
+            dao.insertTrack(trackItem)
+            true
+        } catch (cancelled: CancellationException) {
+            throw cancelled
+        } catch (_: Exception) {
+            false
+        }
+        onResult(saved)
     }
 
     fun deleteTrack(trackItem: TrackItem) = viewModelScope.launch {

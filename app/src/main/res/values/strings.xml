@@ -30,6 +30,10 @@
     <string name="cancel_dialog_btn">Cancel</string>
     <string name="save_this_track_dialog">Save this track?</string>
     <string name="time_dialog">Time: </string>
+    <string name="show_track_save_failed">Unable to save track.</string>
+    <string name="delete_track_title">Delete track</string>
+    <string name="delete_track_message">Delete this saved track?</string>
+    <string name="delete_track_confirm">Delete</string>
 
     //MainFragment
     <string name="tvTime">Time:</string>

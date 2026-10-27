@@ -26,7 +26,7 @@ class TrackAdapter(val listener: Listener) :
             trackTemp = track
             val distance = "${track.distance} km"
             val velocity = track.speed
-            val time = "${track.time} s"
+            val time = track.time
             tvDate.text = track.date
             tvDistance.text = distance
             tvVelocity.text = velocity

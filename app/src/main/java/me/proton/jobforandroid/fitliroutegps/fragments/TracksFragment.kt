@@ -1,5 +1,6 @@
 package me.proton.jobforandroid.fitliroutegps.fragments
 
+import android.app.AlertDialog
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
@@ -8,6 +9,7 @@ import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
 import androidx.recyclerview.widget.LinearLayoutManager
 import me.proton.jobforandroid.fitliroutegps.MainApp
+import me.proton.jobforandroid.fitliroutegps.R
 import me.proton.jobforandroid.fitliroutegps.databinding.FragmentTracksBinding
 import me.proton.jobforandroid.fitliroutegps.db.TrackAdapter
 import me.proton.jobforandroid.fitliroutegps.db.TrackItem
@@ -57,7 +59,14 @@ class TracksFragment : Fragment(), TrackAdapter.Listener {
     override fun onClick(track: TrackItem, type: TrackAdapter.ClickType) {
         when (type) {
             TrackAdapter.ClickType.DELETE -> {
-                model.deleteTrack(track)
+                AlertDialog.Builder(requireContext())
+                    .setTitle(R.string.delete_track_title)
+                    .setMessage(R.string.delete_track_message)
+                    .setPositiveButton(R.string.delete_track_confirm) { _, _ ->
+                        model.deleteTrack(track)
+                    }
+                    .setNegativeButton(android.R.string.cancel, null)
+                    .show()
             }
 
             TrackAdapter.ClickType.OPEN -> {

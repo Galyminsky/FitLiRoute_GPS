@@ -74,12 +74,12 @@ class MainFragment : Fragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         registerPermissions()
-        requestLocationPermissionIfNeeded()
-        setOnClicks()
-        checkServiceState()
-        updateTime()
         registerLocReceiver()
+        setOnClicks()
+        updateTime()
         locationUpdates()
+        requestLocationPermissionIfNeeded()
+        checkServiceState()
     }
 
     private fun setOnClicks() = with(binding) {
@@ -104,6 +104,10 @@ class MainFragment : Fragment() {
 
     private fun locationUpdates() = with(binding) {
         model.locationUpdates.observe(viewLifecycleOwner) {
+            Log.d(
+                "GPS_DIAG",
+                "ui_observer distanceM=${it.distance} speedMps=${it.velocity} points=${it.geoPointsList.size}"
+            )
             val distanceLabel = getString(R.string.distanceLabel)
             val velocityLabel = getString(R.string.velocityLabel)
             val avVelocityLabel = getString(R.string.avVelocityLabel)
@@ -126,23 +130,36 @@ class MainFragment : Fragment() {
     }
 
     private fun startTimer() {
-        timer?.cancel()
-        timer = Timer()
+        cancelTimer()
         startTime = LocationService.startTime
-        timer?.schedule(object : TimerTask() {
+        val newTimer = Timer()
+        timer = newTimer
+        newTimer.schedule(object : TimerTask() {
             override fun run() {
                 activity?.runOnUiThread {
-                    model.timeData.value = getCurrentTime()
+                    if (timer === newTimer) {
+                        model.timeData.value = getCurrentTime()
+                    }
                 }
             }
-        }, 1, 1)
+        }, 0, 1_000)
+    }
+
+    private fun cancelTimer() {
+        timer?.cancel()
+        timer?.purge()
+        timer = null
     }
 
     private fun getAverageVelocity(distance: Float): String {
-        return String.format(
-            "%.1f m/s",
-            3.6f * (distance / ((System.currentTimeMillis() - startTime) / 1000.0f))
-        )
+        val elapsedMillis = System.currentTimeMillis() - startTime
+        val safeDistance = distance.takeIf { it.isFinite() && it >= 0f } ?: 0f
+        val averageVelocity = if (elapsedMillis > 0L) {
+            safeDistance / (elapsedMillis / 1000.0f)
+        } else {
+            0f
+        }
+        return String.format("%.1f m/s", averageVelocity)
     }
 
     private fun getCurrentTime(): String {
@@ -153,31 +170,67 @@ class MainFragment : Fragment() {
 
     private fun geoPointsToString(list: List<GeoPoint>): String {
         val sb = StringBuilder()
-        list.forEach {
+        getValidGeoPoints(list).forEach {
             sb.append("${it.latitude},${it.longitude}/")
         }
         Log.d("MyLog", "Points: $sb")
         return sb.toString()
     }
 
+    private fun getValidGeoPoints(list: List<GeoPoint>): List<GeoPoint> {
+        return list.filter { point ->
+            point.latitude.isFinite() && point.longitude.isFinite() &&
+                point.latitude in -90.0..90.0 && point.longitude in -180.0..180.0
+        }
+    }
+
     private fun startStopService() {
+        if (isServiceStarting) return
+
         if (!isServiceRunning) {
-            startLocService()
+            if (!checkPermission(Manifest.permission.ACCESS_FINE_LOCATION)) {
+                pLauncher.launch(
+                    arrayOf(
+                        Manifest.permission.ACCESS_FINE_LOCATION,
+                        Manifest.permission.ACCESS_COARSE_LOCATION
+                    )
+                )
+                return
+            }
+            if (!isGpsEnabled()) {
+                checkLocationEnabled()
+                return
+            }
+            startLocService(LocationService.hasRecoverableTrack(requireContext()))
         } else {
             activity?.stopService(Intent(activity, LocationService::class.java))
             binding.fStartStop.setImageResource(R.drawable.ic_play)
-            timer?.cancel()
+            binding.fStartStop.isEnabled = true
+            cancelTimer()
+            isServiceRunning = false
             val track = getTrackItem()
-            DialogManager.showSaveDialog(requireContext(),
-                track,
-                object : DialogManager.Listener {
-                    override fun onClick() {
-                        showToast(R.string.show_track_saved)
-                        model.insertTrack(track)
+            val validPoints = getValidGeoPoints(locationModel?.geoPointsList ?: emptyList())
+            val elapsedMillis = System.currentTimeMillis() - startTime
+            if (validPoints.isEmpty() || elapsedMillis <= 0L) {
+                showToast(R.string.show_loc_not_accessed)
+            } else {
+                DialogManager.showSaveDialog(requireContext(),
+                    track,
+                    object : DialogManager.Listener {
+                        override fun onClick() {
+                            model.insertTrack(track) { saved ->
+                                if (isAdded) {
+                                    showToast(
+                                        if (saved) R.string.show_track_saved
+                                        else R.string.show_track_save_failed
+                                    )
+                                }
+                            }
+                        }
                     }
-                })
+                )
+            }
         }
-        isServiceRunning = !isServiceRunning
     }
 
     private fun getTrackItem(): TrackItem {
@@ -195,19 +248,48 @@ class MainFragment : Fragment() {
         isServiceRunning = LocationService.isRunning
         if (isServiceRunning) {
             binding.fStartStop.setImageResource(R.drawable.ic_stop)
+            binding.fStartStop.isEnabled = true
             startTimer()
         }
     }
 
-    private fun startLocService() {
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-            activity?.startForegroundService(Intent(activity, LocationService::class.java))
-        } else {
-            activity?.startService(Intent(activity, LocationService::class.java))
+    private var isServiceStarting = false
+
+    private fun startLocService(resume: Boolean) {
+        val currentActivity = activity ?: return
+        if (isServiceStarting || isServiceRunning) return
+
+        isServiceStarting = true
+        binding.fStartStop.isEnabled = false
+        val intent = Intent(currentActivity, LocationService::class.java).setAction(
+            if (resume) LocationService.ACTION_RESUME else LocationService.ACTION_START
+        )
+        try {
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+                currentActivity.startForegroundService(intent)
+            } else {
+                currentActivity.startService(intent)
+            }
+        } catch (error: RuntimeException) {
+            Log.e("MainFragment", "Unable to start location service", error)
+            onLocationServiceStartFailed()
         }
-        binding.fStartStop.setImageResource(R.drawable.ic_stop)
-        LocationService.startTime = System.currentTimeMillis()
-        startTimer()
+    }
+
+    private fun onLocationServiceStartFailed() {
+        isServiceStarting = false
+        isServiceRunning = false
+        binding.fStartStop.isEnabled = true
+        binding.fStartStop.setImageResource(R.drawable.ic_play)
+        cancelTimer()
+        showToast(R.string.show_loc_not_accessed)
+    }
+
+    private fun isGpsEnabled(): Boolean {
+        val currentActivity = activity ?: return false
+        val locationManager =
+            currentActivity.getSystemService(Context.LOCATION_SERVICE) as LocationManager
+        return locationManager.isProviderEnabled(LocationManager.GPS_PROVIDER)
     }
 
     override fun onResume() {
@@ -218,6 +300,8 @@ class MainFragment : Fragment() {
     }
 
     override fun onDestroyView() {
+        cancelTimer()
+        LocalBroadcastManager.getInstance(requireContext()).unregisterReceiver(receiver)
         gpsDialog?.dismiss()
         gpsDialog = null
         super.onDestroyView()
@@ -277,7 +361,12 @@ class MainFragment : Fragment() {
             initOsm()
             checkLocationEnabled()
         } else {
-            pLauncher.launch(arrayOf(Manifest.permission.ACCESS_FINE_LOCATION))
+            pLauncher.launch(
+                arrayOf(
+                    Manifest.permission.ACCESS_FINE_LOCATION,
+                    Manifest.permission.ACCESS_COARSE_LOCATION
+                )
+            )
         }
     }
 
@@ -313,13 +402,39 @@ class MainFragment : Fragment() {
             if (i?.action == LocationService.LOC_MODEL_INTENT) {
                 val locModel =
                     i.getSerializableExtra(LocationService.LOC_MODEL_INTENT) as LocationModel
+                Log.d(
+                    "GPS_DIAG",
+                    "ui_broadcast_received distanceM=${locModel.distance} " +
+                        "speedMps=${locModel.velocity} points=${locModel.geoPointsList.size}"
+                )
                 model.locationUpdates.value = locModel
+            } else if (i?.action == LocationService.ACTION_RECORDING_STARTED) {
+                isServiceStarting = false
+                isServiceRunning = true
+                binding.fStartStop.isEnabled = true
+                binding.fStartStop.setImageResource(R.drawable.ic_stop)
+                startTimer()
+            } else if (i?.action == LocationService.ACTION_RECORDING_FAILED) {
+                onLocationServiceStartFailed()
+            } else if (i?.action == LocationService.CURRENT_SPEED_INTENT) {
+                val speedMetersPerSecond = i.getFloatExtra(
+                    LocationService.CURRENT_SPEED_INTENT,
+                    0f
+                ).takeIf { it.isFinite() && it >= 0f } ?: 0f
+                val velocityLabel = getString(R.string.velocityLabel)
+                binding.tvVelosity.text =
+                    "$velocityLabel ${String.format("%.1f", 3.6 * speedMetersPerSecond)} km/h"
             }
         }
     }
 
     private fun registerLocReceiver() {
-        val locFilter = IntentFilter(LocationService.LOC_MODEL_INTENT)
+        val locFilter = IntentFilter().apply {
+            addAction(LocationService.LOC_MODEL_INTENT)
+            addAction(LocationService.ACTION_RECORDING_STARTED)
+            addAction(LocationService.ACTION_RECORDING_FAILED)
+            addAction(LocationService.CURRENT_SPEED_INTENT)
+        }
         LocalBroadcastManager.getInstance(activity as AppCompatActivity)
             .registerReceiver(receiver, locFilter)
     }
@@ -341,12 +456,6 @@ class MainFragment : Fragment() {
         } else {
             addPoint(list)
         }
-    }
-
-    override fun onDetach() {
-        super.onDetach()
-        LocalBroadcastManager.getInstance(activity as AppCompatActivity)
-            .unregisterReceiver(receiver)
     }
 
     companion object {

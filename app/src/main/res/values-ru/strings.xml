@@ -31,6 +31,10 @@
     <string name="cancel_dialog_btn">Отмена</string>
     <string name="save_this_track_dialog">Сохранить этот маршрут?</string>
     <string name="time_dialog">Время: </string>
+    <string name="show_track_save_failed">Не удалось сохранить маршрут.</string>
+    <string name="delete_track_title">Удаление маршрута</string>
+    <string name="delete_track_message">Удалить сохранённый маршрут?</string>
+    <string name="delete_track_confirm">Удалить</string>
 
     //MainFragment
     <string name="tvTime">Время:</string>
