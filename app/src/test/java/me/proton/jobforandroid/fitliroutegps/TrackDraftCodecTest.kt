@@ -10,6 +10,8 @@ import org.junit.Assert.assertEquals
 import org.junit.Assert.assertThrows
 import org.junit.Test
 import java.io.IOException
+import java.nio.ByteBuffer
+import java.util.zip.CRC32
 
 class TrackDraftCodecTest {
     private val recording = TrackDraft(
@@ -60,5 +62,60 @@ class TrackDraftCodecTest {
         assertEquals(stopped, repository.read())
         repository.delete()
         assertEquals(null, repository.read())
+    }
+
+    private fun withValidChecksum(bytes: ByteArray): ByteArray {
+        val payloadSize = bytes.size - 8
+        ByteBuffer.wrap(bytes).putLong(payloadSize, CRC32().apply {
+            update(bytes, 0, payloadSize)
+        }.value)
+        return bytes
+    }
+
+    @Test fun restoresBoundaryCoordinatesAndMissingPreviousFix() {
+        val draft = recording.copy(lastPoint = null,
+            points = listOf(DraftPoint(-90.0, 180.0), DraftPoint(90.0, -180.0)))
+        assertEquals(draft, TrackDraftCodec.decode(TrackDraftCodec.encode(draft)))
+    }
+
+    @Test fun rejectsInvalidMetadataEvenWhenChecksumIsValid() {
+        val mutations: List<(ByteBuffer) -> Unit> = listOf(
+            { it.putInt(4, 0) },
+            { it.putLong(9, 0L) },
+            { it.putFloat(17, -1f) },
+            { it.putFloat(21, Float.NaN) },
+            { it.putLong(42, -1L) },
+            { it.putLong(50, 999L) }
+        )
+        mutations.forEach { mutate ->
+            val bytes = TrackDraftCodec.encode(recording)
+            mutate(ByteBuffer.wrap(bytes))
+            assertThrows(IOException::class.java) {
+                TrackDraftCodec.decode(withValidChecksum(bytes))
+            }
+        }
+    }
+
+    @Test fun rejectsInvalidCoordinatesEvenWhenChecksumIsValid() {
+        listOf(Double.NaN, 91.0).forEach { latitude ->
+            val bytes = TrackDraftCodec.encode(recording)
+            ByteBuffer.wrap(bytes).putDouble(26, latitude)
+            assertThrows(IOException::class.java) {
+                TrackDraftCodec.decode(withValidChecksum(bytes))
+            }
+        }
+    }
+
+    @Test fun rejectsUnknownFormatAndOversizedPointCountBeforeAllocation() {
+        val unknown = TrackDraftCodec.encode(recording)
+        ByteBuffer.wrap(unknown).putInt(0, 0)
+        assertThrows(IOException::class.java) {
+            TrackDraftCodec.decode(withValidChecksum(unknown))
+        }
+        val oversized = TrackDraftCodec.encode(recording)
+        ByteBuffer.wrap(oversized).putInt(58, 1_000_001)
+        assertThrows(IOException::class.java) {
+            TrackDraftCodec.decode(withValidChecksum(oversized))
+        }
     }
 }
