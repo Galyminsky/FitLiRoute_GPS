@@ -15,6 +15,7 @@ import me.proton.jobforandroid.fitliroutegps.MainApp
 import me.proton.jobforandroid.fitliroutegps.R
 import me.proton.jobforandroid.fitliroutegps.databinding.FragmentViewTrackBinding
 import me.proton.jobforandroid.fitliroutegps.viewmodel.MainViewModel
+import me.proton.jobforandroid.fitliroutegps.utils.showToast
 import org.osmdroid.config.Configuration
 import org.osmdroid.library.BuildConfig
 import org.osmdroid.util.GeoPoint
@@ -57,6 +58,10 @@ class ViewTrackFragment : Fragment() {
             tvDistance.text = distance
 
             val polyline = getPolyline(it.geoPoints)
+            if (polyline.actualPoints.isEmpty()) {
+                showToast(R.string.show_track_empty)
+                return@observe
+            }
             map.overlays.add(polyline)
             setMarkers(polyline.actualPoints)
             goToStartPosition(polyline.actualPoints[0])

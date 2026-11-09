@@ -3,12 +3,15 @@ package me.proton.jobforandroid.fitliroutegps.fragments
 import android.Manifest
 import android.content.BroadcastReceiver
 import android.content.Context
+import android.content.ComponentName
 import android.content.Intent
 import android.content.IntentFilter
+import android.content.ServiceConnection
 import android.graphics.Color
 import android.location.LocationManager
 import android.os.Build
 import android.os.Bundle
+import android.os.IBinder
 import android.provider.Settings
 import android.util.Log
 import android.view.LayoutInflater
@@ -52,6 +55,18 @@ class MainFragment : Fragment() {
     private var permissionRequestStarted = false
     private var osmInitialized = false
     private var lastGpsEnabled: Boolean? = null
+    private var boundService: LocationService? = null
+    private var serviceBound = false
+    private var stopping = false
+    private val serviceConnection = object : ServiceConnection {
+        override fun onServiceConnected(name: ComponentName?, binder: IBinder?) {
+            boundService = (binder as? LocationService.LocalBinder)?.getService()
+        }
+
+        override fun onServiceDisconnected(name: ComponentName?) {
+            boundService = null
+        }
+    }
     lateinit var mLocOverlay: MyLocationNewOverlay
     private lateinit var pLauncher: ActivityResultLauncher<Array<String>>
     private lateinit var binding: FragmentMainBinding
@@ -160,13 +175,40 @@ class MainFragment : Fragment() {
     }
 
     private fun startStopService() {
+        if (stopping) return
         if (!isServiceRunning) {
+            if (!checkPermission(Manifest.permission.ACCESS_FINE_LOCATION)) {
+                showToast(R.string.show_loc_not_accessed)
+                return
+            }
+            val locationManager = requireContext().getSystemService(Context.LOCATION_SERVICE) as LocationManager
+            if (!locationManager.isProviderEnabled(LocationManager.GPS_PROVIDER)) {
+                showToast(R.string.location_disabled)
+                return
+            }
+            locationModel = null
+            resetTrackUi()
             startLocService()
+            bindLocationService()
         } else {
+            val snapshot = boundService?.getTrackSnapshot()
+            if (snapshot == null) {
+                bindLocationService()
+                showToast(R.string.show_service_unavailable)
+                return
+            }
+            stopping = true
+            unbindLocationService()
             activity?.stopService(Intent(activity, LocationService::class.java))
             binding.fStartStop.setImageResource(R.drawable.ic_play)
             timer?.cancel()
-            val track = getTrackItem()
+            if (snapshot.geoPointsList.isEmpty()) {
+                showToast(R.string.show_track_empty)
+                isServiceRunning = false
+                stopping = false
+                return
+            }
+            val track = getTrackItem(snapshot)
             DialogManager.showSaveDialog(requireContext(),
                 track,
                 object : DialogManager.Listener {
@@ -175,18 +217,26 @@ class MainFragment : Fragment() {
                         model.insertTrack(track)
                     }
                 })
+            stopping = false
         }
         isServiceRunning = !isServiceRunning
     }
 
-    private fun getTrackItem(): TrackItem {
+    private fun resetTrackUi() = with(binding) {
+        tvDistance.setText(R.string.waiting_for_gps)
+        tvVelosity.text = "${getString(R.string.velocityLabel)} 0.0 km/h"
+        tvAveragaVel.text = "${getString(R.string.avVelocityLabel)} 0.0 m/s"
+        tvTime.text = "${getString(R.string.tvTime)} 00:00:00:000"
+    }
+
+    private fun getTrackItem(snapshot: LocationModel): TrackItem {
         return TrackItem(
             null,
             getCurrentTime(),
             TimeUtils.getDate(),
-            String.format("%.1f", locationModel?.distance?.div(1000) ?: 0.0f),
-            getAverageVelocity(locationModel?.distance ?: 0.0f),
-            geoPointsToString(locationModel?.geoPointsList ?: listOf()),
+            String.format("%.1f", snapshot.distance.div(1000)),
+            getAverageVelocity(snapshot.distance),
+            geoPointsToString(snapshot.geoPointsList),
         )
     }
 
@@ -195,7 +245,34 @@ class MainFragment : Fragment() {
         if (isServiceRunning) {
             binding.fStartStop.setImageResource(R.drawable.ic_stop)
             startTimer()
+            bindLocationService()
         }
+    }
+
+    private fun bindLocationService() {
+        if (!serviceBound && isAdded) {
+            serviceBound = requireContext().bindService(
+                Intent(requireContext(), LocationService::class.java), serviceConnection, 0
+            )
+        }
+    }
+
+    private fun unbindLocationService() {
+        if (serviceBound) {
+            requireContext().unbindService(serviceConnection)
+            serviceBound = false
+        }
+        boundService = null
+    }
+
+    override fun onStart() {
+        super.onStart()
+        if (LocationService.isRunning) bindLocationService()
+    }
+
+    override fun onStop() {
+        unbindLocationService()
+        super.onStop()
     }
 
     private fun startLocService() {

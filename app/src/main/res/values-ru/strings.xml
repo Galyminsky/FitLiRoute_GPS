@@ -56,6 +56,9 @@
     //FragmentTrack
     <string name="ft_txt_emty">Пусто</string>
     <string name="show_track_saved">Трек сохранен!</string>
+    <string name="show_track_empty">Нет GPS-точек. Маршрут не сохранён.</string>
+    <string name="show_service_unavailable">Подключение к записи. Нажмите STOP ещё раз.</string>
+    <string name="waiting_for_gps">Ожидание GPS…</string>
     <string name="show_gps_enabled">GPS включен!</string>
     <string name="show_loc_not_accessed">Нет доступа к местоположению!</string>
 </resources>

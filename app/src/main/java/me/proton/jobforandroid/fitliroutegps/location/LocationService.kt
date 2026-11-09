@@ -5,6 +5,7 @@ import android.app.NotificationChannel
 import android.app.NotificationManager
 import android.app.PendingIntent
 import android.app.Service
+import android.os.Binder
 import android.content.Intent
 import android.content.pm.PackageManager
 import android.location.Location
@@ -31,9 +32,22 @@ class LocationService : Service() {
     private lateinit var locProvider: FusedLocationProviderClient
     private lateinit var locRequest: LocationRequest
     private lateinit var geoPointsList: ArrayList<GeoPoint>
+    private var lastSpeed = 0.0f
+    private val binder = LocalBinder()
+
+    inner class LocalBinder : Binder() {
+        fun getService(): LocationService = this@LocationService
+    }
 
     override fun onBind(intent: Intent?): IBinder? {
-        return null
+        return binder
+    }
+
+    @Synchronized
+    fun getTrackSnapshot(): LocationModel? {
+        if (!isRunning) return null
+        val points = ArrayList(geoPointsList.map { GeoPoint(it.latitude, it.longitude) })
+        return LocationModel(lastSpeed, distance, points)
     }
 
     override fun onStartCommand(intent: Intent?, flags: Int, startId: Int): Int {
@@ -58,18 +72,21 @@ class LocationService : Service() {
     private val locCallBack = object : LocationCallback() {
         override fun onLocationResult(lResult: LocationResult) {
             super.onLocationResult(lResult)
-            val currentLocation = lResult.lastLocation
-            if (lastLocation != null && currentLocation != null) {
-                distance += lastLocation?.distanceTo(currentLocation)!!
-                geoPointsList.add(GeoPoint(currentLocation.latitude, currentLocation.longitude))
-                val locModel = LocationModel(
-                    currentLocation.speed,
-                    distance,
-                    geoPointsList
-                )
-                sendLocData(locModel)
+            synchronized(this@LocationService) {
+                val currentLocation = lResult.lastLocation
+                if (lastLocation != null && currentLocation != null) {
+                    lastSpeed = currentLocation.speed
+                    distance += lastLocation?.distanceTo(currentLocation)!!
+                    geoPointsList.add(GeoPoint(currentLocation.latitude, currentLocation.longitude))
+                    val locModel = LocationModel(
+                        currentLocation.speed,
+                        distance,
+                        geoPointsList
+                    )
+                    sendLocData(locModel)
+                }
+                lastLocation = currentLocation
             }
-            lastLocation = currentLocation
         }
     }
 

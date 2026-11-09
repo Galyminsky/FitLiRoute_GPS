@@ -56,6 +56,9 @@
     //FragmentTrack
     <string name="ft_txt_emty">Empty</string>
     <string name="show_track_saved">Track Saved!</string>
+    <string name="show_track_empty">No GPS points recorded. Track was not saved.</string>
+    <string name="show_service_unavailable">Connecting to the tracker. Please try STOP again.</string>
+    <string name="waiting_for_gps">Waiting for GPS…</string>
     <string name="show_gps_enabled">GPS Enabled!</string>
     <string name="show_loc_not_accessed">Location not accessed!</string>
 
