@@ -57,8 +57,17 @@
     <string name="show_track_saved">Track Saved!</string>
     <string name="show_track_empty">No GPS points recorded. Track was not saved.</string>
     <string name="show_service_unavailable">Connecting to the tracker. Please try STOP again.</string>
+    <string name="show_draft_pending">Resolve the unfinished route before starting a new one.</string>
+    <string name="show_draft_save_failed">Route was not saved. The draft is kept.</string>
+    <string name="draft_found">Unfinished route found</string>
+    <string-array name="draft_actions"><item>Continue recording</item><item>Save without continuing</item><item>Delete route</item></string-array>
     <string name="waiting_for_gps">Waiting for GPS…</string>
     <string name="show_gps_enabled">GPS Enabled!</string>
     <string name="show_loc_not_accessed">Location not accessed!</string>
 
+    <string name="draft_read_failed">The route draft cannot be read. Delete it to start a new route, or cancel to keep it.</string>
+    <string name="draft_delete">Delete draft</string>
+    <string-array name="draft_empty_actions"><item>Continue recording</item><item>Delete route</item></string-array>
+    <string name="show_track_corrupt">Route data is damaged and cannot be displayed.</string>
+    <string name="show_draft_cleanup_failed">Route saved, but the draft could not be removed. Retry its deletion.</string>
 </resources>

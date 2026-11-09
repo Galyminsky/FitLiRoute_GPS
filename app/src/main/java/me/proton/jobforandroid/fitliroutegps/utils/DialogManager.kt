@@ -34,7 +34,7 @@ object DialogManager {
         dialog.show()
     }
 
-    fun showSaveDialog(context: Context, item: TrackItem?, listener: Listener) {
+    fun showSaveDialog(context: Context, item: TrackItem?, listener: Listener, onCancel: () -> Unit = {}) {
         val builder = AlertDialog.Builder(context)
         val binding = SaveDialogBinding.inflate(LayoutInflater.from(context), null, false)
         builder.setView(binding.root)
@@ -55,6 +55,7 @@ object DialogManager {
                 dialog.dismiss()
             }
             btnCancelDialog.setOnClickListener {
+                onCancel()
                 dialog.dismiss()
             }
         }

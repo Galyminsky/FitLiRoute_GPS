@@ -24,6 +24,15 @@ import com.google.android.gms.location.Priority.PRIORITY_HIGH_ACCURACY
 import me.proton.jobforandroid.fitliroutegps.MainActivity
 import me.proton.jobforandroid.fitliroutegps.R
 import org.osmdroid.util.GeoPoint
+import kotlinx.coroutines.CompletableDeferred
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.SupervisorJob
+import kotlinx.coroutines.cancel
+import kotlinx.coroutines.channels.Channel
+import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
+import java.util.concurrent.ThreadLocalRandom
 
 class LocationService : Service() {
 
@@ -34,6 +43,13 @@ class LocationService : Service() {
     private lateinit var geoPointsList: ArrayList<GeoPoint>
     private var lastSpeed = 0.0f
     private val binder = LocalBinder()
+    private val draftStore by lazy { TrackDraftStore(applicationContext) }
+    private val persistenceScope = CoroutineScope(SupervisorJob() + Dispatchers.IO)
+    private val writes = Channel<Pair<TrackDraft, CompletableDeferred<Boolean>?>>(Channel.CONFLATED)
+    private var draftId = 0
+    private var sequence = 0L
+    private var stopping = false
+    private var starting = false
 
     inner class LocalBinder : Binder() {
         fun getService(): LocationService = this@LocationService
@@ -50,23 +66,101 @@ class LocationService : Service() {
         return LocationModel(lastSpeed, distance, points)
     }
 
+    suspend fun checkpointForStop(): TrackDraft? {
+        val draft = synchronized(this) {
+            if (!isRunning || stopping) return null
+            stopping = true
+            currentDraft(false)
+        }
+        val saved = try {
+            locProvider.removeLocationUpdates(locCallBack)
+            val completion = CompletableDeferred<Boolean>()
+            writes.send(draft to completion)
+            completion.await()
+        } catch (_: Exception) { false }
+        if (!saved) {
+            stopping = false
+            startLocationUpdates()
+            return null
+        }
+        return draft
+    }
+
+    private fun currentDraft(recording: Boolean) = TrackDraft(
+        draftId, recording, startTime, distance, lastSpeed,
+        lastLocation?.let { DraftPoint(it.latitude, it.longitude) },
+        geoPointsList.map { DraftPoint(it.latitude, it.longitude) }, sequence, System.currentTimeMillis()
+    )
+
     override fun onStartCommand(intent: Intent?, flags: Int, startId: Int): Int {
+        if (starting || isRunning) return START_NOT_STICKY
+        if (intent?.action != ACTION_NEW && intent?.action != ACTION_RESUME) {
+            stopSelf(startId)
+            return START_NOT_STICKY
+        }
+        starting = true
         startNotification()
-        startLocationUpdates()
-        isRunning = true
-        return START_STICKY
+        persistenceScope.launch {
+            try {
+                val existing = draftStore.read()
+                if (intent.action == ACTION_NEW && existing != null) throw IllegalStateException("Unresolved draft")
+                val recovered = if (intent.action == ACTION_RESUME) existing else null
+                if (intent.action == ACTION_RESUME && recovered == null) throw IllegalStateException("No draft")
+                withContext(Dispatchers.Main) {
+                    if (recovered != null) {
+                        synchronized(this@LocationService) {
+                            draftId = recovered.id
+                            startTime = TrackDraftRecovery.resumedStartTime(recovered, System.currentTimeMillis())
+                            distance = recovered.distance
+                            lastSpeed = recovered.speed
+                            lastLocation = recovered.lastPoint?.let { Location("draft").apply {
+                                latitude = it.latitude; longitude = it.longitude
+                            } }
+                            geoPointsList = ArrayList(recovered.points.map { GeoPoint(it.latitude, it.longitude) })
+                            sequence = recovered.sequence
+                        }
+                    } else {
+                        draftId = ThreadLocalRandom.current().nextInt(1, Int.MAX_VALUE)
+                    }
+                }
+                draftStore.write(currentDraft(true))
+                withContext(Dispatchers.Main) {
+                    if (!startLocationUpdates()) throw IllegalStateException("Location permission unavailable")
+                    isRunning = true
+                    starting = false
+                    if (recovered != null && geoPointsList.isNotEmpty()) {
+                        sendLocData(LocationModel(lastSpeed, distance, geoPointsList))
+                    }
+                }
+            } catch (_: Exception) {
+                withContext(Dispatchers.Main) {
+                    starting = false
+                    LocalBroadcastManager.getInstance(applicationContext)
+                        .sendBroadcast(Intent(ACTION_START_FAILED))
+                    stopSelf(startId)
+                }
+            }
+        }
+        return START_NOT_STICKY
     }
 
     override fun onCreate() {
         super.onCreate()
         geoPointsList = ArrayList()
         initLocation()
+        persistenceScope.launch {
+            for ((draft, completion) in writes) {
+                val success = try { draftStore.write(draft); true } catch (_: Exception) { false }
+                completion?.complete(success)
+            }
+        }
     }
 
     override fun onDestroy() {
         super.onDestroy()
         isRunning = false
         locProvider.removeLocationUpdates(locCallBack)
+        persistenceScope.cancel()
     }
 
     private val locCallBack = object : LocationCallback() {
@@ -74,10 +168,11 @@ class LocationService : Service() {
             super.onLocationResult(lResult)
             synchronized(this@LocationService) {
                 val currentLocation = lResult.lastLocation
-                if (lastLocation != null && currentLocation != null) {
+                if (!stopping && lastLocation != null && currentLocation != null) {
                     lastSpeed = currentLocation.speed
                     distance += lastLocation?.distanceTo(currentLocation)!!
                     geoPointsList.add(GeoPoint(currentLocation.latitude, currentLocation.longitude))
+                    sequence++
                     val locModel = LocationModel(
                         currentLocation.speed,
                         distance,
@@ -85,7 +180,10 @@ class LocationService : Service() {
                     )
                     sendLocData(locModel)
                 }
-                lastLocation = currentLocation
+                if (!stopping && currentLocation != null) {
+                    lastLocation = currentLocation
+                    writes.trySend(currentDraft(true) to null)
+                }
             }
         }
     }
@@ -140,21 +238,25 @@ class LocationService : Service() {
         locProvider = LocationServices.getFusedLocationProviderClient(baseContext)
     }
 
-    private fun startLocationUpdates() {
+    private fun startLocationUpdates(): Boolean {
         if (ActivityCompat.checkSelfPermission(
                 this,
                 Manifest.permission.ACCESS_FINE_LOCATION
             ) != PackageManager.PERMISSION_GRANTED
-        ) return
+        ) return false
 
         locProvider.requestLocationUpdates(
             locRequest,
             locCallBack,
             Looper.myLooper()
         )
+        return true
     }
 
     companion object {
+        const val ACTION_NEW = "me.proton.jobforandroid.fitliroutegps.NEW_TRACK"
+        const val ACTION_RESUME = "me.proton.jobforandroid.fitliroutegps.RESUME_TRACK"
+        const val ACTION_START_FAILED = "me.proton.jobforandroid.fitliroutegps.START_FAILED"
         const val CHANNEL_ID = "channel_1"
         const val LOC_MODEL_INTENT = "loc_intent"
         var isRunning = false
