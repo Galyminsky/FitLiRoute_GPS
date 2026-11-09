@@ -50,7 +50,6 @@ class MainFragment : Fragment() {
     private var timer: Timer? = null
     private var startTime = 0L
     private var permissionRequestStarted = false
-    private var backgroundPermissionRequested = false
     private var osmInitialized = false
     private var lastGpsEnabled: Boolean? = null
     lateinit var mLocOverlay: MyLocationNewOverlay
@@ -253,13 +252,6 @@ class MainFragment : Fragment() {
         ) {
             if (checkPermission(Manifest.permission.ACCESS_FINE_LOCATION)) {
                 checkLocPermission()
-                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q &&
-                    !checkPermission(Manifest.permission.ACCESS_BACKGROUND_LOCATION) &&
-                    !backgroundPermissionRequested
-                ) {
-                    backgroundPermissionRequested = true
-                    pLauncher.launch(arrayOf(Manifest.permission.ACCESS_BACKGROUND_LOCATION))
-                }
             } else {
                 showToast(R.string.show_loc_not_accessed)
             }
@@ -273,13 +265,6 @@ class MainFragment : Fragment() {
                 osmInitialized = true
             }
             checkLocationEnabled()
-            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q &&
-                !checkPermission(Manifest.permission.ACCESS_BACKGROUND_LOCATION) &&
-                !backgroundPermissionRequested
-            ) {
-                backgroundPermissionRequested = true
-                pLauncher.launch(arrayOf(Manifest.permission.ACCESS_BACKGROUND_LOCATION))
-            }
         } else if (!permissionRequestStarted) {
             permissionRequestStarted = true
             pLauncher.launch(arrayOf(Manifest.permission.ACCESS_FINE_LOCATION))

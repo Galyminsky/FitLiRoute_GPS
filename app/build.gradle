@@ -11,7 +11,7 @@ android {
     defaultConfig {
         applicationId "me.proton.jobforandroid.fitliroutegps"
         minSdk 29
-        targetSdk 33
+        targetSdk 37
         versionCode 1
         versionName "1.0"
 
@@ -37,6 +37,8 @@ android {
 
 dependencies {
 
+    testImplementation 'junit:junit:4.13.2'
+
     implementation 'androidx.core:core-ktx:1.19.1'
     implementation 'androidx.appcompat:appcompat:1.8.0'
     implementation 'com.google.android.material:material:1.14.0'
@@ -45,7 +47,7 @@ dependencies {
     implementation 'androidx.preference:preference-ktx:1.2.1'
 
     //OSM
-    implementation 'org.osmdroid:osmdroid-android:6.1.14'
+    implementation 'org.osmdroid:osmdroid-android:6.1.20'
     implementation 'com.github.MKergall:osmbonuspack:6.9.0'
 
     //GSM
@@ -53,8 +55,6 @@ dependencies {
 
     // Room
     implementation "androidx.room:room-ktx:2.8.5"
-    implementation 'androidx.test:rules:1.5.0'
-    implementation 'androidx.preference:preference:1.2.1'
     ksp "androidx.room:room-compiler:2.8.5"
 
     // Coroutines
