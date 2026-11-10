@@ -10,6 +10,9 @@ interface Dao {
     @Insert
     suspend fun insertTrack(trackItem: TrackItem)
 
+    @Query("SELECT * FROM track WHERE id = :id LIMIT 1")
+    suspend fun getTrackById(id: Int): TrackItem?
+
     @Query("SELECT * FROM TRACK")
     fun getAllTracks(): Flow<List<TrackItem>>
 

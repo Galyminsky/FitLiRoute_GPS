@@ -25,4 +25,7 @@ data class TrackItem(
     @ColumnInfo(name = "geo_points")
     val geoPoints: String,
 
+    @ColumnInfo(name = "name", defaultValue = "")
+    val name: String = "",
+
     )

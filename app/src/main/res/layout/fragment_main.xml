@@ -1,132 +1,32 @@
 <?xml version="1.0" encoding="utf-8"?>
-<androidx.constraintlayout.widget.ConstraintLayout
-    xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:app="http://schemas.android.com/apk/res-auto"
-    xmlns:tools="http://schemas.android.com/tools"
-    android:layout_width="match_parent"
-    android:layout_height="match_parent"
-    tools:context=".fragments.MainFragment">
-
-    <com.google.android.material.floatingactionbutton.FloatingActionButton
-        android:id="@+id/fCenter"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginEnd="16dp"
-        android:layout_marginBottom="16dp"
-        android:alpha="0.7"
-        android:clickable="true"
-        android:contentDescription="@string/myLocation"
-        android:focusable="true"
-        android:src="@drawable/ic_loc"
-        app:backgroundTint="@color/grey_light"
-        app:layout_constraintBottom_toTopOf="@+id/fStartStop"
-        app:layout_constraintEnd_toEndOf="parent" />
-
-    <com.google.android.material.floatingactionbutton.FloatingActionButton
-        android:id="@+id/fStartStop"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginEnd="16dp"
-        android:layout_marginBottom="16dp"
-        android:alpha="0.7"
-        android:clickable="true"
-        android:contentDescription="@string/play_btn"
-        android:focusable="true"
-        android:src="@drawable/ic_play"
-        app:backgroundTint="@color/grey_light"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toEndOf="parent" />
-
-    <org.osmdroid.views.MapView
-        android:id="@+id/map"
-        android:layout_width="0dp"
-        android:layout_height="0dp"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="1.0"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintVertical_bias="0.0">
-
-    </org.osmdroid.views.MapView>
-
-    <com.google.android.material.card.MaterialCardView
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginStart="10dp"
-        android:layout_marginTop="10dp"
-        android:alpha="0.5"
-        app:cardCornerRadius="30dp"
-        app:cardElevation="5dp"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent">
-
-        <androidx.constraintlayout.widget.ConstraintLayout
-            android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:background="@color/grey_light"
-            android:padding="16dp">
-
-            <TextView
-                android:id="@+id/tvTime"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_marginStart="5dp"
-                android:layout_marginTop="5dp"
-                android:backgroundTint="#4DFFFFFF"
-                android:fontFamily="@font/acme"
-                android:padding="5dp"
-                android:text="@string/tvTime"
-                android:textColor="@color/black"
-                app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toTopOf="parent" />
-
-            <TextView
-                android:id="@+id/tvAveragaVel"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_marginStart="5dp"
-                android:layout_marginTop="5dp"
-                android:fontFamily="@font/acme"
-                android:padding="5dp"
-                android:text="@string/avVelocityLabel"
-                android:textColor="@color/black"
-                app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toBottomOf="@+id/tvTime" />
-
-            <TextView
-                android:id="@+id/tvVelosity"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_marginStart="5dp"
-                android:layout_marginTop="5dp"
-                android:backgroundTint="#4DFFFFFF"
-                android:fontFamily="@font/acme"
-                android:padding="5dp"
-                android:text="@string/velocityLabel"
-                android:textColor="@color/black"
-                app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toBottomOf="@+id/tvAveragaVel" />
-
-            <TextView
-                android:id="@+id/tvDistance"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_marginStart="5dp"
-                android:layout_marginTop="5dp"
-                android:layout_marginEnd="5dp"
-                android:layout_marginBottom="5dp"
-                android:backgroundTint="#4DFFFFFF"
-                android:fontFamily="@font/acme"
-                android:padding="5dp"
-                android:text="@string/distanceLabel"
-                android:textColor="@color/black"
-                android:textSize="24sp"
-                app:layout_constraintBottom_toBottomOf="parent"
-                app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toBottomOf="@+id/tvVelosity" />
-
-        </androidx.constraintlayout.widget.ConstraintLayout>
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android" xmlns:app="http://schemas.android.com/apk/res-auto" android:layout_width="match_parent" android:layout_height="match_parent">
+    <org.osmdroid.views.MapView android:id="@+id/map" android:layout_width="0dp" android:layout_height="0dp" app:layout_constraintTop_toTopOf="parent" app:layout_constraintBottom_toBottomOf="parent" app:layout_constraintStart_toStartOf="parent" app:layout_constraintEnd_toEndOf="parent" />
+    <com.google.android.material.card.MaterialCardView android:id="@+id/statsCard" android:layout_width="0dp" android:layout_height="168dp" android:layout_marginStart="16dp" android:layout_marginEnd="16dp" android:layout_marginTop="18dp" app:cardBackgroundColor="@color/white" app:cardCornerRadius="22dp" app:cardElevation="8dp" app:strokeColor="#F4F1EC" app:strokeWidth="1dp" app:layout_constraintStart_toStartOf="parent" app:layout_constraintEnd_toEndOf="parent" app:layout_constraintTop_toTopOf="parent">
+        <LinearLayout android:layout_width="match_parent" android:layout_height="match_parent" android:orientation="vertical" android:paddingStart="17dp" android:paddingEnd="17dp" android:paddingTop="14dp">
+            <LinearLayout android:layout_width="match_parent" android:layout_height="wrap_content" android:gravity="center_vertical" android:orientation="horizontal">
+                <TextView android:layout_width="0dp" android:layout_height="wrap_content" android:layout_weight="1" android:text="@string/tracking_label" android:textColor="@color/design_secondary" android:textSize="10sp" android:textStyle="bold" android:letterSpacing="0.03" />
+                <View android:id="@+id/gpsDot" android:layout_width="8dp" android:layout_height="8dp" android:background="@drawable/gps_status_dot" />
+                <TextView android:id="@+id/gpsStatus" android:layout_width="wrap_content" android:layout_height="wrap_content" android:layout_marginStart="7dp" android:text="@string/gps_status_enabled" android:textColor="#267C50" android:textSize="11sp" android:textStyle="bold" />
+            </LinearLayout>
+            <LinearLayout android:layout_width="match_parent" android:layout_height="63dp" android:gravity="bottom" android:orientation="horizontal">
+                <TextView android:id="@+id/tvDistance" android:layout_width="wrap_content" android:layout_height="wrap_content" android:maxLines="1" android:ellipsize="end" android:text="0,00" android:textColor="@color/design_text" android:textSize="40sp" android:textStyle="bold" />
+                <TextView android:layout_width="wrap_content" android:layout_height="wrap_content" android:layout_marginStart="6dp" android:layout_marginBottom="7dp" android:text="@string/distance_unit" android:textColor="@color/design_secondary" android:textSize="17sp" />
+            </LinearLayout>
+            <View android:layout_width="match_parent" android:layout_height="1dp" android:layout_marginTop="6dp" android:background="#EAE7E2" />
+            <LinearLayout android:layout_width="match_parent" android:layout_height="match_parent" android:paddingTop="12dp" android:orientation="horizontal">
+                <LinearLayout android:layout_width="0dp" android:layout_height="wrap_content" android:layout_weight="1" android:orientation="vertical"><TextView android:layout_width="match_parent" android:layout_height="wrap_content" android:text="@string/time_stat_label" android:textColor="@color/design_secondary" android:textSize="11sp"/><TextView android:id="@+id/tvTime" android:layout_width="match_parent" android:layout_height="wrap_content" android:layout_marginTop="5dp" android:text="00:00:00" android:textColor="@color/design_text" android:textSize="15sp" android:textStyle="bold"/></LinearLayout>
+                <LinearLayout android:layout_width="0dp" android:layout_height="wrap_content" android:layout_weight="1" android:orientation="vertical"><TextView android:layout_width="match_parent" android:layout_height="wrap_content" android:text="@string/speed_stat_label" android:textColor="@color/design_secondary" android:textSize="11sp"/><TextView android:id="@+id/tvVelosity" android:layout_width="match_parent" android:layout_height="wrap_content" android:layout_marginTop="5dp" android:maxLines="1" android:ellipsize="end" android:text="0,0 РєРј/С‡" android:textColor="@color/design_text" android:textSize="14sp" android:textStyle="bold"/></LinearLayout>
+                <LinearLayout android:layout_width="0dp" android:layout_height="wrap_content" android:layout_weight="1" android:orientation="vertical"><TextView android:layout_width="match_parent" android:layout_height="wrap_content" android:text="@string/average_stat_label" android:textColor="@color/design_secondary" android:textSize="11sp"/><TextView android:id="@+id/tvAveragaVel" android:layout_width="match_parent" android:layout_height="wrap_content" android:layout_marginTop="5dp" android:maxLines="1" android:ellipsize="end" android:text="0,0 РєРј/С‡" android:textColor="@color/design_text" android:textSize="14sp" android:textStyle="bold"/></LinearLayout>
+            </LinearLayout>
+        </LinearLayout>
     </com.google.android.material.card.MaterialCardView>
+    <com.google.android.material.floatingactionbutton.FloatingActionButton android:id="@+id/fCenter" android:layout_width="56dp" android:layout_height="56dp" android:layout_marginEnd="16dp" android:layout_marginBottom="182dp" android:contentDescription="@string/myLocation" android:src="@drawable/ic_loc" app:backgroundTint="@color/white" app:tint="@color/design_text" app:fabCustomSize="56dp" app:shapeAppearanceOverlay="@style/ShapeAppearance.FitRoute.FloatingButton" app:layout_constraintBottom_toBottomOf="parent" app:layout_constraintEnd_toEndOf="parent" />
+    <com.google.android.material.card.MaterialCardView android:id="@+id/zoomControls" android:layout_width="48dp" android:layout_height="96dp" android:layout_marginStart="16dp" android:layout_marginBottom="106dp" app:cardBackgroundColor="@color/white" app:cardCornerRadius="16dp" app:cardElevation="5dp" app:layout_constraintStart_toStartOf="parent" app:layout_constraintBottom_toBottomOf="parent">
+        <LinearLayout android:layout_width="match_parent" android:layout_height="match_parent" android:orientation="vertical">
+            <ImageView android:id="@+id/zoomIn" android:layout_width="match_parent" android:layout_height="47dp" android:padding="12dp" android:contentDescription="@string/map_zoom_in" app:srcCompat="@drawable/ic_zoom_plus" />
+            <View android:layout_width="match_parent" android:layout_height="1dp" android:layout_marginStart="10dp" android:layout_marginEnd="10dp" android:background="#EAE7E2" />
+            <ImageView android:id="@+id/zoomOut" android:layout_width="match_parent" android:layout_height="48dp" android:padding="12dp" android:contentDescription="@string/map_zoom_out" app:srcCompat="@drawable/ic_zoom_minus" />
+        </LinearLayout>
+    </com.google.android.material.card.MaterialCardView>
+    <com.google.android.material.floatingactionbutton.FloatingActionButton android:id="@+id/fStartStop" android:layout_width="64dp" android:layout_height="64dp" android:layout_marginEnd="16dp" android:layout_marginBottom="106dp" android:contentDescription="@string/play_btn" android:src="@drawable/ic_play" app:backgroundTint="#FF693B" app:tint="@color/white" app:fabCustomSize="64dp" app:shapeAppearanceOverlay="@style/ShapeAppearance.FitRoute.StartButton" app:layout_constraintBottom_toBottomOf="parent" app:layout_constraintEnd_toEndOf="parent" />
 </androidx.constraintlayout.widget.ConstraintLayout>

@@ -3,8 +3,8 @@ package me.proton.jobforandroid.fitliroutegps
 import android.os.Bundle
 import androidx.appcompat.app.AppCompatActivity
 import com.google.firebase.analytics.FirebaseAnalytics
-import com.google.firebase.analytics.ktx.analytics
-import com.google.firebase.ktx.Firebase
+import com.google.firebase.analytics.analytics
+import com.google.firebase.Firebase
 import me.proton.jobforandroid.fitliroutegps.databinding.ActivityMainBinding
 import me.proton.jobforandroid.fitliroutegps.fragments.MainFragment
 import me.proton.jobforandroid.fitliroutegps.fragments.SettingsFragment
@@ -20,8 +20,15 @@ class MainActivity : AppCompatActivity() {
         binding = ActivityMainBinding.inflate(layoutInflater)
         setContentView(binding.root)
         analytics = Firebase.analytics
+        if (savedInstanceState == null) {
+            openFragment(MainFragment.newInstance())
+        }
+    }
+
+    override fun onPostCreate(savedInstanceState: Bundle?) {
+        super.onPostCreate(savedInstanceState)
+        // Attach after the bottom navigation restores its selected item.
         onBottomNavClicks()
-        openFragment(MainFragment.newInstance())
     }
 
     private fun onBottomNavClicks() {

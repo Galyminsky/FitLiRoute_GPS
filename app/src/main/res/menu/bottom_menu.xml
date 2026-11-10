@@ -4,19 +4,19 @@
     <item
         android:id="@+id/home_menu"
         android:title="@string/home_menu"
-        android:icon="@drawable/ic_home"
+        android:icon="@drawable/icon17_home"
         android:orderInCategory="100"/>
 
     <item
         android:id="@+id/trucks_menu"
         android:title="@string/tracks"
-        android:icon="@drawable/ic_tracks"
+        android:icon="@drawable/icon17_routes"
         android:orderInCategory="200"/>
 
     <item
         android:id="@+id/setting_menu"
         android:title="@string/setting_menu"
-        android:icon="@drawable/ic_settings"
+        android:icon="@drawable/icon17_settings"
         android:orderInCategory="300"/>
 
 </menu>

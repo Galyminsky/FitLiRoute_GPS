@@ -15,6 +15,9 @@ import me.proton.jobforandroid.fitliroutegps.MainApp
 import me.proton.jobforandroid.fitliroutegps.R
 import me.proton.jobforandroid.fitliroutegps.databinding.FragmentViewTrackBinding
 import me.proton.jobforandroid.fitliroutegps.viewmodel.MainViewModel
+import me.proton.jobforandroid.fitliroutegps.utils.showToast
+import me.proton.jobforandroid.fitliroutegps.utils.RoutePointsParser
+import me.proton.jobforandroid.fitliroutegps.utils.RouteColorPalette
 import org.osmdroid.config.Configuration
 import org.osmdroid.library.BuildConfig
 import org.osmdroid.util.GeoPoint
@@ -56,7 +59,18 @@ class ViewTrackFragment : Fragment() {
             tvAveragaVel.text = speed
             tvDistance.text = distance
 
-            val polyline = getPolyline(it.geoPoints)
+            startPoint = null
+            map.overlays.clear()
+            val coordinates = RoutePointsParser.parse(it.geoPoints)
+            if (coordinates == null) {
+                showToast(R.string.show_track_corrupt)
+                return@observe
+            }
+            if (coordinates.isEmpty()) {
+                showToast(R.string.show_track_empty)
+                return@observe
+            }
+            val polyline = getPolyline(coordinates)
             map.overlays.add(polyline)
             setMarkers(polyline.actualPoints)
             goToStartPosition(polyline.actualPoints[0])
@@ -82,18 +96,13 @@ class ViewTrackFragment : Fragment() {
         map.overlays.add(finishMarker)
     }
 
-    private fun getPolyline(geoPoints: String): Polyline {
+    private fun getPolyline(coordinates: List<Pair<Double, Double>>): Polyline {
         val polyline = Polyline()
-        polyline.outlinePaint.color = Color.parseColor(
+        polyline.outlinePaint.color = RouteColorPalette.resolve(requireContext(),
             PreferenceManager.getDefaultSharedPreferences(requireContext())
                 .getString("color_key", "#FA2C2C")
         )
-        val list = geoPoints.split("/")
-        list.forEach {
-            if (it.isEmpty()) return@forEach
-            val points = it.split(",")
-            polyline.addPoint(GeoPoint(points[0].toDouble(), points[1].toDouble()))
-        }
+        coordinates.forEach { (latitude, longitude) -> polyline.addPoint(GeoPoint(latitude, longitude)) }
         return polyline
     }
 

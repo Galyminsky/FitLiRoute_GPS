@@ -20,6 +20,14 @@ class MainViewModel(db: MainDB) : ViewModel() {
         dao.insertTrack(trackItem)
     }
 
+    suspend fun saveRecoveredTrack(trackItem: TrackItem): Boolean {
+        val id = trackItem.id ?: return false
+        val existing = dao.getTrackById(id)
+        if (existing != null) return existing == trackItem
+        dao.insertTrack(trackItem)
+        return true
+    }
+
     fun deleteTrack(trackItem: TrackItem) = viewModelScope.launch {
         dao.deleteTrack(trackItem)
     }

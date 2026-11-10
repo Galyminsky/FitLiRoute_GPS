@@ -3,11 +3,13 @@ package me.proton.jobforandroid.fitliroutegps.utils
 import android.app.AlertDialog
 import android.content.Context
 import android.graphics.Color
-import android.graphics.drawable.ColorDrawable
 import android.view.LayoutInflater
+import android.view.View
+import com.google.android.material.bottomsheet.BottomSheetDialog
 import me.proton.jobforandroid.fitliroutegps.R
 import me.proton.jobforandroid.fitliroutegps.databinding.SaveDialogBinding
 import me.proton.jobforandroid.fitliroutegps.db.TrackItem
+import me.proton.jobforandroid.fitliroutegps.utils.RouteNameFormatter
 
 object DialogManager {
 
@@ -34,32 +36,35 @@ object DialogManager {
         dialog.show()
     }
 
-    fun showSaveDialog(context: Context, item: TrackItem?, listener: Listener) {
-        val builder = AlertDialog.Builder(context)
+    fun showSaveDialog(context: Context, item: TrackItem, onSave: (String) -> Unit, onCancel: () -> Unit = {}) {
         val binding = SaveDialogBinding.inflate(LayoutInflater.from(context), null, false)
-        builder.setView(binding.root)
-        val dialog = builder.create()
+        val dialog = BottomSheetDialog(context)
+        dialog.setContentView(binding.root)
 
         binding.apply {
 
-            val time = "${item?.time} m"
-            val velocity = "${item?.speed}"
-            val distance = "${item?.distance} km"
+            val time = item.time.substringAfter(':').trim()
+            val velocity = item.speed.replace("m/s", "km/h")
+            val distance = "${item.distance} km"
+            val defaultName = RouteNameFormatter.defaultName(context, item.date)
 
             tvTimeDialog.text = time
             tvVelocityDialog.text = velocity
             tvDistanceDialog.text = distance
+            routeNameInput.setText(defaultName)
 
             btnSaveDialog.setOnClickListener {
-                listener.onClick()
+                onSave(routeNameInput.text.toString().trim().ifEmpty { defaultName })
                 dialog.dismiss()
             }
             btnCancelDialog.setOnClickListener {
+                onCancel()
                 dialog.dismiss()
             }
         }
-        dialog.window?.setBackgroundDrawable(ColorDrawable(Color.TRANSPARENT))
         dialog.show()
+        dialog.findViewById<View>(com.google.android.material.R.id.design_bottom_sheet)
+            ?.setBackgroundColor(Color.TRANSPARENT)
     }
 
     interface Listener {
