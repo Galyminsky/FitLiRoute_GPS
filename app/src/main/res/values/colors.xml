@@ -1,5 +1,13 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
+    <color name="design_background">#F7F7F5</color>
+    <color name="design_text">#171C20</color>
+    <color name="design_secondary">#697077</color>
+    <color name="design_border">#EEEAE5</color>
+    <color name="design_selected">#FFF0E9</color>
+    <color name="route_electric_blue">#326BEE</color>
+    <color name="route_vivid_violet">#8254DF</color>
+    <color name="route_deep_teal">#009C9A</color>
     <color name="purple_200">#FFBB86FC</color>
     <color name="purple_500">#FF6200EE</color>
     <color name="purple_700">#FF3700B3</color>

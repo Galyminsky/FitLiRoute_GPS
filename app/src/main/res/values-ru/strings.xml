@@ -1,6 +1,25 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
+    <string name="map_zoom_in">Увеличить карту</string>
+    <string name="map_zoom_out">Уменьшить карту</string>
+    <string name="tracking_label">ЗАПИСЬ МАРШРУТА</string>
+    <string name="gps_status_enabled">GPS</string>
+    <string name="gps_status_disabled">GPS ВЫКЛ.</string>
+    <string name="distance_unit">км</string>
+    <string name="time_stat_label">Время</string>
+    <string name="speed_stat_label">Скорость</string>
+    <string name="average_stat_label">Средняя</string>
+    <string name="save_sheet_subtitle">Проверьте результаты записи</string>
+    <string name="average_speed_sheet_label">Средняя скорость</string>
+    <string name="route_history_subtitle">История ваших перемещений</string>
+    <string name="design_geolocation">ГЕОЛОКАЦИЯ</string>
+    <string name="design_display">ОТОБРАЖЕНИЕ</string>
+    <string name="design_location">Местоположение</string>
+    <string name="design_location_summary">Системные настройки GPS</string>
+    <string name="design_update_interval">Интервал обновления</string>
     <string name="app_name">Fit Li Route GPS</string>
+    <string name="route_name_label">Название маршрута</string>
+    <string name="default_route_name">Маршрут %1$s</string>
 
     //MainActivity
     <string name="home_menu">Главная</string>

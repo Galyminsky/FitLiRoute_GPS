@@ -17,6 +17,7 @@ import me.proton.jobforandroid.fitliroutegps.databinding.FragmentViewTrackBindin
 import me.proton.jobforandroid.fitliroutegps.viewmodel.MainViewModel
 import me.proton.jobforandroid.fitliroutegps.utils.showToast
 import me.proton.jobforandroid.fitliroutegps.utils.RoutePointsParser
+import me.proton.jobforandroid.fitliroutegps.utils.RouteColorPalette
 import org.osmdroid.config.Configuration
 import org.osmdroid.library.BuildConfig
 import org.osmdroid.util.GeoPoint
@@ -97,7 +98,7 @@ class ViewTrackFragment : Fragment() {
 
     private fun getPolyline(coordinates: List<Pair<Double, Double>>): Polyline {
         val polyline = Polyline()
-        polyline.outlinePaint.color = Color.parseColor(
+        polyline.outlinePaint.color = RouteColorPalette.resolve(requireContext(),
             PreferenceManager.getDefaultSharedPreferences(requireContext())
                 .getString("color_key", "#FA2C2C")
         )

@@ -20,8 +20,15 @@ class MainActivity : AppCompatActivity() {
         binding = ActivityMainBinding.inflate(layoutInflater)
         setContentView(binding.root)
         analytics = Firebase.analytics
+        if (savedInstanceState == null) {
+            openFragment(MainFragment.newInstance())
+        }
+    }
+
+    override fun onPostCreate(savedInstanceState: Bundle?) {
+        super.onPostCreate(savedInstanceState)
+        // Attach after the bottom navigation restores its selected item.
         onBottomNavClicks()
-        openFragment(MainFragment.newInstance())
     }
 
     private fun onBottomNavClicks() {

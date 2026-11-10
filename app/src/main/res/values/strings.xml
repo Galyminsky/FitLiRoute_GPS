@@ -1,5 +1,24 @@
 <resources>
+    <string name="map_zoom_in">Zoom in</string>
+    <string name="map_zoom_out">Zoom out</string>
+    <string name="tracking_label">RECORDING ROUTE</string>
+    <string name="gps_status_enabled">GPS</string>
+    <string name="gps_status_disabled">GPS OFF</string>
+    <string name="distance_unit">km</string>
+    <string name="time_stat_label">Time</string>
+    <string name="speed_stat_label">Speed</string>
+    <string name="average_stat_label">Average</string>
+    <string name="save_sheet_subtitle">Review your route results</string>
+    <string name="average_speed_sheet_label">Average speed</string>
+    <string name="route_history_subtitle">History of your routes</string>
+    <string name="design_geolocation">GEOLOCATION</string>
+    <string name="design_display">DISPLAY</string>
+    <string name="design_location">Location</string>
+    <string name="design_location_summary">System GPS settings</string>
+    <string name="design_update_interval">Update interval</string>
     <string name="app_name">Fit Li Route GPS</string>
+    <string name="route_name_label">Route name</string>
+    <string name="default_route_name">Route %1$s</string>
 
     //MainActivity
     <string name="home_menu">Home</string>

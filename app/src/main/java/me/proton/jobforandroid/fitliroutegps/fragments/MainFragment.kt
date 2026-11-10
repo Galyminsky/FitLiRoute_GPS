@@ -9,6 +9,9 @@ import android.content.Intent
 import android.content.IntentFilter
 import android.content.ServiceConnection
 import android.graphics.Color
+import android.graphics.Bitmap
+import android.graphics.Canvas
+import android.content.res.ColorStateList
 import android.location.LocationManager
 import android.os.Build
 import android.os.Bundle
@@ -24,6 +27,7 @@ import android.view.ViewGroup
 import androidx.activity.result.ActivityResultLauncher
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.appcompat.app.AppCompatActivity
+import androidx.appcompat.content.res.AppCompatResources
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
 import androidx.localbroadcastmanager.content.LocalBroadcastManager
@@ -40,6 +44,7 @@ import me.proton.jobforandroid.fitliroutegps.location.TrackDraftStore
 import me.proton.jobforandroid.fitliroutegps.location.TrackDraftRecovery
 import me.proton.jobforandroid.fitliroutegps.utils.DialogManager
 import me.proton.jobforandroid.fitliroutegps.utils.TimeUtils
+import me.proton.jobforandroid.fitliroutegps.utils.RouteColorPalette
 import me.proton.jobforandroid.fitliroutegps.utils.checkPermission
 import me.proton.jobforandroid.fitliroutegps.utils.showToast
 import me.proton.jobforandroid.fitliroutegps.viewmodel.MainViewModel
@@ -109,11 +114,15 @@ class MainFragment : Fragment() {
         super.onViewCreated(view, savedInstanceState)
         registerPermissions()
         setOnClicks()
+        binding.map.setBuiltInZoomControls(false)
+        binding.zoomIn.setOnClickListener { binding.map.controller.zoomIn() }
+        binding.zoomOut.setOnClickListener { binding.map.controller.zoomOut() }
         checkServiceState()
         updateTime()
         registerLocReceiver()
         locationUpdates()
         checkForDraft()
+        updateGpsStatus()
     }
 
     private fun setOnClicks() = with(binding) {
@@ -147,9 +156,9 @@ class MainFragment : Fragment() {
             val velocity = "$velocityLabel ${String.format("%.1f", 3.6 * it.velocity)} km/h"
             val avVelocity = "$avVelocityLabel ${getAverageVelocity(it.distance)}"
 
-            tvDistance.text = distance
-            tvVelosity.text = velocity
-            tvAveragaVel.text = avVelocity
+            tvDistance.text = String.format(Locale.getDefault(), "%.2f", it.distance / 1000f)
+            tvVelosity.text = velocity.substringAfter(':').trim()
+            tvAveragaVel.text = avVelocity.substringAfter(':').trim().replace("m/s", "km/h")
             locationModel = it
             updatePolyline(it.geoPointsList)
         }
@@ -157,7 +166,7 @@ class MainFragment : Fragment() {
 
     private fun updateTime() {
         model.timeData.observe(viewLifecycleOwner) {
-            binding.tvTime.text = it
+            binding.tvTime.text = it.substringAfter(':').trim()
         }
     }
 
@@ -270,13 +279,12 @@ class MainFragment : Fragment() {
 
     private fun showSaveDraft(draft: TrackDraft) {
         val track = getTrackItem(draft)
-        DialogManager.showSaveDialog(requireContext(), track, object : DialogManager.Listener {
-            override fun onClick() {
-                if (savingDraft) return
+        DialogManager.showSaveDialog(requireContext(), track, { name ->
+                if (savingDraft) return@showSaveDialog
                 savingDraft = true
                 viewLifecycleOwner.lifecycleScope.launch {
                     val saved = withContext(Dispatchers.IO) {
-                        try { model.saveRecoveredTrack(track) } catch (_: Exception) { false }
+                        try { model.saveRecoveredTrack(track.copy(name = name)) } catch (_: Exception) { false }
                     }
                     val draftDeleted = if (saved) withContext(Dispatchers.IO) {
                         try { draftStore.delete(); true } catch (_: Exception) { false }
@@ -290,7 +298,6 @@ class MainFragment : Fragment() {
                         showDraftChoices(draft)
                     }
                 }
-            }
         }) { discardDraft() }
     }
 
@@ -362,9 +369,9 @@ class MainFragment : Fragment() {
 
     private fun resetTrackUi() = with(binding) {
         tvDistance.setText(R.string.waiting_for_gps)
-        tvVelosity.text = "${getString(R.string.velocityLabel)} 0.0 km/h"
-        tvAveragaVel.text = "${getString(R.string.avVelocityLabel)} 0.0 m/s"
-        tvTime.text = "${getString(R.string.tvTime)} 00:00:00"
+        tvVelosity.text = "0.0 km/h"
+        tvAveragaVel.text = "0.0 m/s"
+        tvTime.text = "00:00:00"
     }
 
     private fun getTrackItem(draft: TrackDraft): TrackItem {
@@ -455,7 +462,7 @@ class MainFragment : Fragment() {
 
     private fun initOsm() = with(binding) {
         pl = Polyline()
-        pl?.outlinePaint?.color = Color.parseColor(
+        pl?.outlinePaint?.color = RouteColorPalette.resolve(requireContext(),
             PreferenceManager.getDefaultSharedPreferences(requireContext())
                 .getString("color_key", "#FA2C2C")
         )
@@ -463,6 +470,15 @@ class MainFragment : Fragment() {
         //map.controller.animateTo(GeoPoint(52.54735, 62.50001))
         val mLocProvider = GpsMyLocationProvider(activity)
         mLocOverlay = MyLocationNewOverlay(mLocProvider, map)
+        val marker = AppCompatResources.getDrawable(requireContext(), R.drawable.current_location_dot)!!
+        val markerSize = (60 * resources.displayMetrics.density).toInt()
+        val markerBitmap = Bitmap.createBitmap(markerSize, markerSize, Bitmap.Config.ARGB_8888)
+        marker.setBounds(0, 0, markerSize, markerSize)
+        marker.draw(Canvas(markerBitmap))
+        mLocOverlay.setPersonIcon(markerBitmap)
+        mLocOverlay.setDirectionIcon(markerBitmap)
+        mLocOverlay.setPersonAnchor(.5f, .5f)
+        mLocOverlay.setDirectionAnchor(.5f, .5f)
         mLocOverlay.enableMyLocation()
         mLocOverlay.enableFollowLocation()
         mLocOverlay.runOnFirstFix {
@@ -503,6 +519,7 @@ class MainFragment : Fragment() {
     private fun checkLocationEnabled() {
         val lManager = activity?.getSystemService(Context.LOCATION_SERVICE) as LocationManager
         val isEnabled = lManager.isProviderEnabled(LocationManager.GPS_PROVIDER)
+        updateGpsStatus(isEnabled)
         if (!isEnabled && lastGpsEnabled != false) {
             DialogManager.showLocEnabledDialog(
                 activity as AppCompatActivity,
@@ -515,6 +532,13 @@ class MainFragment : Fragment() {
             showToast(R.string.show_gps_enabled)
         }
         lastGpsEnabled = isEnabled
+    }
+
+    private fun updateGpsStatus(enabled: Boolean = (requireContext().getSystemService(Context.LOCATION_SERVICE) as LocationManager).isProviderEnabled(LocationManager.GPS_PROVIDER)) {
+        val color = Color.parseColor(if (enabled) "#2E9A65" else "#C1654B")
+        binding.gpsDot.backgroundTintList = ColorStateList.valueOf(color)
+        binding.gpsStatus.setText(if (enabled) R.string.gps_status_enabled else R.string.gps_status_disabled)
+        binding.gpsStatus.setTextColor(color)
     }
 
     private val receiver = object : BroadcastReceiver() {

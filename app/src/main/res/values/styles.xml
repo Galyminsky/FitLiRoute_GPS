@@ -1,5 +1,16 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
+    <style name="ThemeOverlay.FitRoute.ChoiceDialog" parent="ThemeOverlay.MaterialComponents.MaterialAlertDialog">
+        <item name="colorPrimary">#FF693B</item>
+        <item name="colorAccent">#FF693B</item>
+        <item name="colorControlActivated">#FF693B</item>
+        <item name="colorSurface">@color/white</item>
+        <item name="colorOnSurface">@color/design_text</item>
+        <item name="shapeAppearanceOverlay">@style/ShapeAppearance.FitRoute.ChoiceDialog</item>
+    </style>
+    <style name="ShapeAppearance.FitRoute.ChoiceDialog" parent="ShapeAppearance.MaterialComponents.MediumComponent"><item name="cornerSize">20dp</item></style>
+    <style name="ShapeAppearance.FitRoute.FloatingButton" parent="ShapeAppearance.MaterialComponents.MediumComponent"><item name="cornerSize">18dp</item></style>
+    <style name="ShapeAppearance.FitRoute.StartButton" parent="ShapeAppearance.MaterialComponents.MediumComponent"><item name="cornerSize">20dp</item></style>
     <style name="AppTheme" parent="Theme.AppCompat.Light.NoActionBar">
         <item name="android:windowBackground">@android:color/transparent</item>
     </style>

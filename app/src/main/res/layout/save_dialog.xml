@@ -1,106 +1,14 @@
 <?xml version="1.0" encoding="utf-8"?>
-<androidx.cardview.widget.CardView xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:app="http://schemas.android.com/apk/res-auto"
-    android:layout_width="match_parent"
-    android:layout_height="wrap_content"
-    android:layout_margin="10dp"
-    android:background="@color/grey_dark_middle"
-    app:cardCornerRadius="10dp"
-    app:cardElevation="5dp">
-
-    <androidx.constraintlayout.widget.ConstraintLayout
-        android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:background="@color/grey_light">
-
-        <TextView
-            android:id="@+id/tvTitle_dialog"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="16dp"
-            android:fontFamily="@font/acme"
-            android:text="@string/save_this_track_dialog"
-            android:textColor="@color/grey_dark"
-            android:textSize="25sp"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toTopOf="parent" />
-
-        <TextView
-            android:id="@+id/tvTime_dialog"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="16dp"
-            android:fontFamily="@font/acme"
-            android:text="@string/time_dialog"
-            android:textColor="@color/grey_dark"
-            android:textSize="16sp"
-            android:textStyle="bold"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/tvTitle_dialog" />
-
-        <TextView
-            android:id="@+id/tvVelocity_dialog"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="10dp"
-            android:fontFamily="@font/acme"
-            android:text="@string/velocity_dialog"
-            android:textColor="@color/grey_dark"
-            android:textSize="16sp"
-            android:textStyle="bold"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/tvTime_dialog" />
-
-        <TextView
-            android:id="@+id/tvDistance_dialog"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="10dp"
-            android:fontFamily="@font/acme"
-            android:text="@string/distance_dialog"
-            android:textColor="@color/grey_dark"
-            android:textSize="20sp"
-            android:textStyle="bold"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/tvVelocity_dialog" />
-
-        <LinearLayout
-            android:layout_width="0dp"
-            android:layout_height="wrap_content"
-            android:layout_marginStart="16dp"
-            android:layout_marginTop="16dp"
-            android:layout_marginEnd="16dp"
-            android:layout_marginBottom="10dp"
-            android:orientation="horizontal"
-            app:layout_constraintBottom_toBottomOf="parent"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/tvDistance_dialog"
-            app:layout_constraintVertical_bias="0.0">
-
-            <com.google.android.material.button.MaterialButton
-                android:id="@+id/btnSave_dialog"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_marginEnd="5dp"
-                android:layout_weight="1"
-                android:backgroundTint="@color/grey_dark"
-                android:text="@string/save_dialog_btn"
-                app:cornerRadius="10dp" />
-
-            <com.google.android.material.button.MaterialButton
-                android:id="@+id/btnCancel_dialog"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_marginStart="5dp"
-                android:layout_weight="1"
-                android:backgroundTint="@color/grey_dark"
-                android:text="@string/cancel_dialog_btn"
-                app:cornerRadius="10dp" />
-        </LinearLayout>
-    </androidx.constraintlayout.widget.ConstraintLayout>
-</androidx.cardview.widget.CardView>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android" android:layout_width="match_parent" android:layout_height="wrap_content" android:background="@drawable/save_sheet_background" android:orientation="vertical" android:paddingStart="24dp" android:paddingEnd="24dp" android:paddingBottom="18dp">
+    <View android:layout_width="45dp" android:layout_height="5dp" android:layout_gravity="center_horizontal" android:layout_marginTop="12dp" android:layout_marginBottom="20dp" android:background="@drawable/save_sheet_handle" />
+    <TextView android:id="@+id/tvTitle_dialog" android:layout_width="match_parent" android:layout_height="wrap_content" android:text="@string/save_this_track_dialog" android:textColor="@color/design_text" android:textSize="22sp" android:textStyle="bold" />
+    <TextView android:layout_width="match_parent" android:layout_height="wrap_content" android:layout_marginTop="8dp" android:text="@string/save_sheet_subtitle" android:textColor="@color/design_secondary" android:textSize="13sp" />
+    <TextView android:id="@+id/routeNameLabel" android:layout_width="match_parent" android:layout_height="wrap_content" android:layout_marginTop="22dp" android:labelFor="@id/routeNameInput" android:text="@string/route_name_label" android:textColor="@color/design_text" android:textSize="14sp" android:textStyle="bold" />
+    <EditText android:id="@+id/routeNameInput" android:layout_width="match_parent" android:layout_height="48dp" android:layout_marginTop="8dp" android:background="@drawable/route_name_input_background" android:ellipsize="end" android:imeOptions="actionDone" android:inputType="textCapSentences" android:maxLength="60" android:paddingStart="14dp" android:paddingEnd="14dp" android:selectAllOnFocus="true" android:singleLine="true" android:textColor="@color/design_text" android:textSize="15sp" />
+    <TextView android:id="@+id/tvDistance_dialog" android:layout_width="match_parent" android:layout_height="wrap_content" android:layout_marginTop="22dp" android:textColor="@color/design_text" android:textSize="35sp" android:textStyle="bold" />
+    <View android:layout_width="match_parent" android:layout_height="1dp" android:layout_marginTop="14dp" android:background="#EAE7E2" />
+    <LinearLayout android:layout_width="match_parent" android:layout_height="wrap_content" android:layout_marginTop="14dp" android:orientation="horizontal"><TextView android:layout_width="0dp" android:layout_height="wrap_content" android:layout_weight="1" android:text="@string/time_stat_label" android:textColor="@color/design_secondary" android:textSize="13sp"/><TextView android:id="@+id/tvTime_dialog" android:layout_width="wrap_content" android:layout_height="wrap_content" android:textColor="@color/design_text" android:textSize="15sp" android:textStyle="bold"/></LinearLayout>
+    <LinearLayout android:layout_width="match_parent" android:layout_height="wrap_content" android:layout_marginTop="14dp" android:orientation="horizontal"><TextView android:layout_width="0dp" android:layout_height="wrap_content" android:layout_weight="1" android:text="@string/average_speed_sheet_label" android:textColor="@color/design_secondary" android:textSize="13sp"/><TextView android:id="@+id/tvVelocity_dialog" android:layout_width="wrap_content" android:layout_height="wrap_content" android:textColor="@color/design_text" android:textSize="15sp" android:textStyle="bold"/></LinearLayout>
+    <com.google.android.material.button.MaterialButton android:id="@+id/btnSave_dialog" android:layout_width="match_parent" android:layout_height="52dp" android:layout_marginTop="26dp" android:text="@string/save_dialog_btn" android:textColor="@color/design_text" android:textSize="15sp" android:textStyle="bold" app:backgroundTint="#FF693B" app:cornerRadius="16dp" xmlns:app="http://schemas.android.com/apk/res-auto" />
+    <TextView android:id="@+id/btnCancel_dialog" android:layout_width="match_parent" android:layout_height="48dp" android:gravity="center" android:text="@string/cancel_dialog_btn" android:textColor="@color/design_secondary" android:textSize="13sp" />
+</LinearLayout>

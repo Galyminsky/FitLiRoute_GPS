@@ -1,0 +1,1 @@
+<selector xmlns:android="http://schemas.android.com/apk/res/android"><item android:state_checked="true" android:drawable="@drawable/figma_routes_selected"/><item android:drawable="@drawable/figma_routes_default"/></selector>
