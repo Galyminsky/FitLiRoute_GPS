@@ -79,7 +79,7 @@ dependencies {
     implementation 'com.google.firebase:firebase-analytics'
 }
 
-tasks.withType(org.gradle.api.tasks.testing.Test).configureEach {
+tasks.withType(Test).configureEach {
     if (name == 'testDebugUnitTest') {
         filter {
             excludeTestsMatching 'me.proton.jobforandroid.fitliroutegps.MainActivityRecreationTest'

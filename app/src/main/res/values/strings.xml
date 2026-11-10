@@ -4,6 +4,8 @@
     <string name="tracking_label">RECORDING ROUTE</string>
     <string name="gps_status_enabled">GPS</string>
     <string name="gps_status_disabled">GPS OFF</string>
+    <string name="gps_recording_unavailable">GPS is unavailable. Your recorded route is kept; recording will continue when GPS returns.</string>
+    <string name="gps_recording_restored">GPS is available. Route recording continues.</string>
     <string name="distance_unit">km</string>
     <string name="time_stat_label">Time</string>
     <string name="speed_stat_label">Speed</string>
@@ -19,6 +21,9 @@
     <string name="app_name">Fit Li Route GPS</string>
     <string name="route_name_label">Route name</string>
     <string name="default_route_name">Route %1$s</string>
+    <string name="privacy_policy_title">Privacy Policy</string>
+    <string name="terms_of_use_title">Terms of Use</string>
+    <string name="legal_close">Close</string>
 
     //MainActivity
     <string name="home_menu">Home</string>
@@ -83,13 +88,13 @@
     <string name="waiting_for_gps">Waiting for GPS…</string>
     <string name="show_gps_enabled">GPS Enabled!</string>
     <string name="show_loc_not_accessed">Location not accessed!</string>
-    <string name="location_permission_title">Доступ к местоположению</string>
-    <string name="location_permission_disclosure">FITLiROUTE GPS использует точное местоположение для записи пройденного маршрута, расчёта расстояния и скорости.\n\nПосле начала записи приложение продолжает определять местоположение, даже если вы свернули приложение или заблокировали экран.\n\nЗапись начинается только после нажатия START и прекращается после STOP.</string>
-    <string name="location_permission_continue">Продолжить</string>
-    <string name="location_permission_not_now">Не сейчас</string>
-    <string name="location_permission_settings_title">Доступ к местоположению запрещён</string>
-    <string name="location_permission_settings_message">Разрешите доступ к точному местоположению в настройках приложения, чтобы записать маршрут.</string>
-    <string name="location_permission_settings_open">Открыть настройки</string>
+    <string name="location_permission_title">Location access</string>
+    <string name="location_permission_disclosure">FITLiROUTE GPS uses precise location to record your route and calculate distance and speed.\n\nAfter recording starts, the app continues to access your location even when you minimize the app or lock the screen.\n\nRecording starts only after you tap START and ends after you tap STOP.</string>
+    <string name="location_permission_continue">Continue</string>
+    <string name="location_permission_not_now">Not now</string>
+    <string name="location_permission_settings_title">Location access denied</string>
+    <string name="location_permission_settings_message">Allow precise location access in the app settings to record a route.</string>
+    <string name="location_permission_settings_open">Open settings</string>
 
     <string name="draft_read_failed">The route draft cannot be read. Delete it to start a new route, or cancel to keep it.</string>
     <string name="draft_delete">Delete draft</string>

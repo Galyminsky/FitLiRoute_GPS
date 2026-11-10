@@ -276,8 +276,6 @@ class MainFragment : Fragment() {
         locationModel = null
         resetTrackUi()
         startLocService()
-        bindLocationService()
-        isServiceRunning = true
     }
 
     private fun isGpsEnabledForRecording(): Boolean {
@@ -370,9 +368,6 @@ class MainFragment : Fragment() {
         initOsmIfNeeded()
         LocationService.startTime = TrackDraftRecovery.resumedStartTime(draft, System.currentTimeMillis())
         startLocService(LocationService.ACTION_RESUME)
-        bindLocationService()
-        pendingDraft = null
-        isServiceRunning = true
     }
 
     private fun resetTrackUi() = with(binding) {
@@ -400,6 +395,7 @@ class MainFragment : Fragment() {
             binding.fStartStop.setImageResource(R.drawable.ic_stop)
             startTimer()
             bindLocationService()
+            if (!LocationService.gpsAvailable) updateGpsStatus(false)
         }
     }
 
@@ -445,13 +441,13 @@ class MainFragment : Fragment() {
         } else {
             activity?.startService(intent)
         }
-        binding.fStartStop.setImageResource(R.drawable.ic_stop)
+        binding.fStartStop.isEnabled = false
         if (action == LocationService.ACTION_NEW) LocationService.startTime = System.currentTimeMillis()
-        startTimer()
     }
 
     override fun onResume() {
         super.onResume()
+        if (LocationService.isRunning && !LocationService.gpsAvailable) updateGpsStatus(false)
         if (LocationService.isRunning && checkPermission(Manifest.permission.ACCESS_FINE_LOCATION)) {
             initOsmIfNeeded()
         }
@@ -567,9 +563,30 @@ class MainFragment : Fragment() {
                 stopTimer()
                 unbindLocationService()
                 isServiceRunning = false
+                binding.fStartStop.isEnabled = true
                 binding.fStartStop.setImageResource(R.drawable.ic_play)
                 showToast(R.string.show_service_unavailable)
                 checkForDraft()
+                return
+            }
+            if (i?.action == LocationService.ACTION_START_CONFIRMED) {
+                isServiceRunning = true
+                pendingDraft = null
+                binding.fStartStop.isEnabled = true
+                binding.fStartStop.setImageResource(R.drawable.ic_stop)
+                startTimer()
+                bindLocationService()
+                updateGpsStatus()
+                return
+            }
+            if (i?.action == LocationService.ACTION_GPS_UNAVAILABLE) {
+                updateGpsStatus(false)
+                showToast(R.string.gps_recording_unavailable)
+                return
+            }
+            if (i?.action == LocationService.ACTION_GPS_RESTORED) {
+                updateGpsStatus(true)
+                showToast(R.string.gps_recording_restored)
                 return
             }
             if (i?.action == LocationService.LOC_MODEL_INTENT) {
@@ -583,6 +600,9 @@ class MainFragment : Fragment() {
     private fun registerLocReceiver() {
         val locFilter = IntentFilter(LocationService.LOC_MODEL_INTENT)
         locFilter.addAction(LocationService.ACTION_START_FAILED)
+        locFilter.addAction(LocationService.ACTION_START_CONFIRMED)
+        locFilter.addAction(LocationService.ACTION_GPS_UNAVAILABLE)
+        locFilter.addAction(LocationService.ACTION_GPS_RESTORED)
         LocalBroadcastManager.getInstance(activity as AppCompatActivity)
             .registerReceiver(receiver, locFilter)
     }
