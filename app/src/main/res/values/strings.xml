@@ -83,6 +83,13 @@
     <string name="waiting_for_gps">Waiting for GPS…</string>
     <string name="show_gps_enabled">GPS Enabled!</string>
     <string name="show_loc_not_accessed">Location not accessed!</string>
+    <string name="location_permission_title">Доступ к местоположению</string>
+    <string name="location_permission_disclosure">FITLiROUTE GPS использует точное местоположение для записи пройденного маршрута, расчёта расстояния и скорости.\n\nПосле начала записи приложение продолжает определять местоположение, даже если вы свернули приложение или заблокировали экран.\n\nЗапись начинается только после нажатия START и прекращается после STOP.</string>
+    <string name="location_permission_continue">Продолжить</string>
+    <string name="location_permission_not_now">Не сейчас</string>
+    <string name="location_permission_settings_title">Доступ к местоположению запрещён</string>
+    <string name="location_permission_settings_message">Разрешите доступ к точному местоположению в настройках приложения, чтобы записать маршрут.</string>
+    <string name="location_permission_settings_open">Открыть настройки</string>
 
     <string name="draft_read_failed">The route draft cannot be read. Delete it to start a new route, or cancel to keep it.</string>
     <string name="draft_delete">Delete draft</string>
