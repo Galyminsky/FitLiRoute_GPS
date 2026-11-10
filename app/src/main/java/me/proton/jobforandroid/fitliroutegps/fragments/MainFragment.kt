@@ -8,6 +8,7 @@ import android.content.ComponentName
 import android.content.Intent
 import android.content.IntentFilter
 import android.content.ServiceConnection
+import android.net.Uri
 import android.graphics.Color
 import android.graphics.Bitmap
 import android.graphics.Canvas
@@ -33,6 +34,7 @@ import androidx.fragment.app.activityViewModels
 import androidx.localbroadcastmanager.content.LocalBroadcastManager
 import androidx.lifecycle.lifecycleScope
 import androidx.preference.PreferenceManager
+import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import me.proton.jobforandroid.fitliroutegps.MainApp
 import me.proton.jobforandroid.fitliroutegps.R
 import me.proton.jobforandroid.fitliroutegps.databinding.FragmentMainBinding
@@ -44,6 +46,7 @@ import me.proton.jobforandroid.fitliroutegps.location.TrackDraftStore
 import me.proton.jobforandroid.fitliroutegps.location.TrackDraftRecovery
 import me.proton.jobforandroid.fitliroutegps.utils.DialogManager
 import me.proton.jobforandroid.fitliroutegps.utils.TimeUtils
+import me.proton.jobforandroid.fitliroutegps.utils.SpeedUnitFormatter
 import me.proton.jobforandroid.fitliroutegps.utils.RouteColorPalette
 import me.proton.jobforandroid.fitliroutegps.utils.checkPermission
 import me.proton.jobforandroid.fitliroutegps.utils.showToast
@@ -71,9 +74,8 @@ class MainFragment : Fragment() {
     private var timerBaseRealtime = 0L
     private var timerInitialElapsed = 0L
     private var startTime = 0L
-    private var permissionRequestStarted = false
+    private var pendingPermissionAction: StartAction? = null
     private var osmInitialized = false
-    private var lastGpsEnabled: Boolean? = null
     private var boundService: LocationService? = null
     private var serviceBound = false
     private var stopping = false
@@ -81,6 +83,7 @@ class MainFragment : Fragment() {
     private var draftChecked = false
     private var pendingDraft: TrackDraft? = null
     private var draftDialogVisible = false
+    private enum class StartAction { NEW, RESUME }
     private val draftStore by lazy { TrackDraftStore(requireContext().applicationContext) }
     private val serviceConnection = object : ServiceConnection {
         override fun onServiceConnected(name: ComponentName?, binder: IBinder?) {
@@ -153,12 +156,12 @@ class MainFragment : Fragment() {
             val velocityLabel = getString(R.string.velocityLabel)
             val avVelocityLabel = getString(R.string.avVelocityLabel)
             val distance = "$distanceLabel ${String.format("%.1f", it.distance)} m"
-            val velocity = "$velocityLabel ${String.format("%.1f", 3.6 * it.velocity)} km/h"
+            val velocity = "$velocityLabel ${SpeedUnitFormatter.kmh(String.format("%.1f", 3.6 * it.velocity), getString(R.string.speed_unit_kmh))}"
             val avVelocity = "$avVelocityLabel ${getAverageVelocity(it.distance)}"
 
             tvDistance.text = String.format(Locale.getDefault(), "%.2f", it.distance / 1000f)
             tvVelosity.text = velocity.substringAfter(':').trim()
-            tvAveragaVel.text = avVelocity.substringAfter(':').trim().replace("m/s", "km/h")
+            tvAveragaVel.text = avVelocity.substringAfter(':').trim()
             locationModel = it
             updatePolyline(it.geoPointsList)
         }
@@ -192,10 +195,10 @@ class MainFragment : Fragment() {
     }
 
     private fun getAverageVelocity(distance: Float): String {
-        return String.format(
-            "%.1f m/s",
+        return SpeedUnitFormatter.kmh(String.format(
+            "%.1f",
             3.6f * (distance / ((System.currentTimeMillis() - startTime) / 1000.0f))
-        )
+        ), getString(R.string.speed_unit_kmh))
     }
 
     private fun getCurrentTime(elapsedMillis: Long): String {
@@ -224,18 +227,10 @@ class MainFragment : Fragment() {
                 return
             }
             if (!checkPermission(Manifest.permission.ACCESS_FINE_LOCATION)) {
-                showToast(R.string.show_loc_not_accessed)
+                requestLocationFor(StartAction.NEW)
                 return
             }
-            val locationManager = requireContext().getSystemService(Context.LOCATION_SERVICE) as LocationManager
-            if (!locationManager.isProviderEnabled(LocationManager.GPS_PROVIDER)) {
-                showToast(R.string.location_disabled)
-                return
-            }
-            locationModel = null
-            resetTrackUi()
-            startLocService()
-            bindLocationService()
+            startNewRecording()
         } else {
             val service = boundService
             if (service == null) {
@@ -274,7 +269,22 @@ class MainFragment : Fragment() {
             }
             return
         }
-        isServiceRunning = !isServiceRunning
+    }
+
+    private fun startNewRecording() {
+        if (isServiceRunning || pendingDraft != null || !draftChecked || !isGpsEnabledForRecording()) return
+        initOsmIfNeeded()
+        locationModel = null
+        resetTrackUi()
+        startLocService()
+    }
+
+    private fun isGpsEnabledForRecording(): Boolean {
+        val locationManager = requireContext().getSystemService(Context.LOCATION_SERVICE) as LocationManager
+        val enabled = locationManager.isProviderEnabled(LocationManager.GPS_PROVIDER)
+        updateGpsStatus(enabled)
+        if (!enabled) showToast(R.string.location_disabled)
+        return enabled
     }
 
     private fun showSaveDraft(draft: TrackDraft) {
@@ -352,25 +362,19 @@ class MainFragment : Fragment() {
 
     private fun resumeDraft(draft: TrackDraft) {
         if (!checkPermission(Manifest.permission.ACCESS_FINE_LOCATION)) {
-            showToast(R.string.show_loc_not_accessed)
+            requestLocationFor(StartAction.RESUME)
             return
         }
-        val locationManager = requireContext().getSystemService(Context.LOCATION_SERVICE) as LocationManager
-        if (!locationManager.isProviderEnabled(LocationManager.GPS_PROVIDER)) {
-            showToast(R.string.location_disabled)
-            return
-        }
+        if (!isGpsEnabledForRecording()) return
+        initOsmIfNeeded()
         LocationService.startTime = TrackDraftRecovery.resumedStartTime(draft, System.currentTimeMillis())
         startLocService(LocationService.ACTION_RESUME)
-        bindLocationService()
-        pendingDraft = null
-        isServiceRunning = true
     }
 
     private fun resetTrackUi() = with(binding) {
         tvDistance.setText(R.string.waiting_for_gps)
-        tvVelosity.text = "0.0 km/h"
-        tvAveragaVel.text = "0.0 m/s"
+        tvVelosity.text = SpeedUnitFormatter.kmh("0.0", getString(R.string.speed_unit_kmh))
+        tvAveragaVel.text = SpeedUnitFormatter.kmh("0.0", getString(R.string.speed_unit_kmh))
         tvTime.text = "00:00:00"
     }
 
@@ -381,7 +385,7 @@ class MainFragment : Fragment() {
             "${getString(R.string.tvTime)} ${TimeUtils.getTime(duration)}",
             java.text.SimpleDateFormat("dd/MM/yyyy HH:mm", Locale.getDefault()).format(Date(draft.updatedAt)),
             String.format("%.1f", draft.distance.div(1000)),
-            String.format("%.1f m/s", 3.6f * (draft.distance / (duration / 1000.0f))),
+            SpeedUnitFormatter.kmh(String.format("%.1f", 3.6f * (draft.distance / (duration / 1000.0f))), getString(R.string.speed_unit_kmh)),
             geoPointsToString(draft.points.map { GeoPoint(it.latitude, it.longitude) }),
         )
     }
@@ -392,6 +396,7 @@ class MainFragment : Fragment() {
             binding.fStartStop.setImageResource(R.drawable.ic_stop)
             startTimer()
             bindLocationService()
+            if (!LocationService.gpsAvailable) updateGpsStatus(false)
         }
     }
 
@@ -437,14 +442,16 @@ class MainFragment : Fragment() {
         } else {
             activity?.startService(intent)
         }
-        binding.fStartStop.setImageResource(R.drawable.ic_stop)
+        binding.fStartStop.isEnabled = false
         if (action == LocationService.ACTION_NEW) LocationService.startTime = System.currentTimeMillis()
-        startTimer()
     }
 
     override fun onResume() {
         super.onResume()
-        checkLocPermission()
+        if (LocationService.isRunning && !LocationService.gpsAvailable) updateGpsStatus(false)
+        if (LocationService.isRunning && checkPermission(Manifest.permission.ACCESS_FINE_LOCATION)) {
+            initOsmIfNeeded()
+        }
     }
 
     override fun onAttach(context: Context) {
@@ -495,43 +502,53 @@ class MainFragment : Fragment() {
         pLauncher = registerForActivityResult(
             ActivityResultContracts.RequestMultiplePermissions()
         ) {
+            val action = pendingPermissionAction
+            pendingPermissionAction = null
             if (checkPermission(Manifest.permission.ACCESS_FINE_LOCATION)) {
-                checkLocPermission()
+                when (action) {
+                    StartAction.NEW -> startNewRecording()
+                    StartAction.RESUME -> pendingDraft?.let(::resumeDraft)
+                    null -> Unit
+                }
             } else {
                 showToast(R.string.show_loc_not_accessed)
             }
         }
     }
 
-    private fun checkLocPermission() {
-        if (checkPermission(Manifest.permission.ACCESS_FINE_LOCATION)) {
-            if (!osmInitialized) {
-                initOsm()
-                osmInitialized = true
-            }
-            checkLocationEnabled()
-        } else if (!permissionRequestStarted) {
-            permissionRequestStarted = true
-            pLauncher.launch(arrayOf(Manifest.permission.ACCESS_FINE_LOCATION))
+    private fun requestLocationFor(action: StartAction) {
+        if (pendingPermissionAction != null) return
+        val preferences = PreferenceManager.getDefaultSharedPreferences(requireContext())
+        if (preferences.getBoolean(LOCATION_PERMISSION_REQUESTED, false) &&
+            !shouldShowRequestPermissionRationale(Manifest.permission.ACCESS_FINE_LOCATION)) {
+            MaterialAlertDialogBuilder(requireContext(), R.style.ThemeOverlay_FitRoute_ChoiceDialog)
+                .setTitle(R.string.location_permission_settings_title)
+                .setMessage(R.string.location_permission_settings_message)
+                .setPositiveButton(R.string.location_permission_settings_open) { _, _ ->
+                    startActivity(Intent(Settings.ACTION_APPLICATION_DETAILS_SETTINGS,
+                        Uri.parse("package:${requireContext().packageName}")))
+                }
+                .setNegativeButton(R.string.location_permission_not_now, null)
+                .show()
+            return
         }
+        MaterialAlertDialogBuilder(requireContext(), R.style.ThemeOverlay_FitRoute_ChoiceDialog)
+            .setTitle(R.string.location_permission_title)
+            .setMessage(R.string.location_permission_disclosure)
+            .setPositiveButton(R.string.location_permission_continue) { _, _ ->
+                pendingPermissionAction = action
+                preferences.edit().putBoolean(LOCATION_PERMISSION_REQUESTED, true).apply()
+                pLauncher.launch(arrayOf(Manifest.permission.ACCESS_FINE_LOCATION))
+            }
+            .setNegativeButton(R.string.location_permission_not_now, null)
+            .show()
     }
 
-    private fun checkLocationEnabled() {
-        val lManager = activity?.getSystemService(Context.LOCATION_SERVICE) as LocationManager
-        val isEnabled = lManager.isProviderEnabled(LocationManager.GPS_PROVIDER)
-        updateGpsStatus(isEnabled)
-        if (!isEnabled && lastGpsEnabled != false) {
-            DialogManager.showLocEnabledDialog(
-                activity as AppCompatActivity,
-                object : DialogManager.Listener {
-                    override fun onClick() {
-                        startActivity(Intent(Settings.ACTION_LOCATION_SOURCE_SETTINGS))
-                    }
-                })
-        } else if (isEnabled && lastGpsEnabled == false) {
-            showToast(R.string.show_gps_enabled)
+    private fun initOsmIfNeeded() {
+        if (!osmInitialized) {
+            initOsm()
+            osmInitialized = true
         }
-        lastGpsEnabled = isEnabled
     }
 
     private fun updateGpsStatus(enabled: Boolean = (requireContext().getSystemService(Context.LOCATION_SERVICE) as LocationManager).isProviderEnabled(LocationManager.GPS_PROVIDER)) {
@@ -547,9 +564,30 @@ class MainFragment : Fragment() {
                 stopTimer()
                 unbindLocationService()
                 isServiceRunning = false
+                binding.fStartStop.isEnabled = true
                 binding.fStartStop.setImageResource(R.drawable.ic_play)
                 showToast(R.string.show_service_unavailable)
                 checkForDraft()
+                return
+            }
+            if (i?.action == LocationService.ACTION_START_CONFIRMED) {
+                isServiceRunning = true
+                pendingDraft = null
+                binding.fStartStop.isEnabled = true
+                binding.fStartStop.setImageResource(R.drawable.ic_stop)
+                startTimer()
+                bindLocationService()
+                updateGpsStatus()
+                return
+            }
+            if (i?.action == LocationService.ACTION_GPS_UNAVAILABLE) {
+                updateGpsStatus(false)
+                showToast(R.string.gps_recording_unavailable)
+                return
+            }
+            if (i?.action == LocationService.ACTION_GPS_RESTORED) {
+                updateGpsStatus(true)
+                showToast(R.string.gps_recording_restored)
                 return
             }
             if (i?.action == LocationService.LOC_MODEL_INTENT) {
@@ -563,6 +601,9 @@ class MainFragment : Fragment() {
     private fun registerLocReceiver() {
         val locFilter = IntentFilter(LocationService.LOC_MODEL_INTENT)
         locFilter.addAction(LocationService.ACTION_START_FAILED)
+        locFilter.addAction(LocationService.ACTION_START_CONFIRMED)
+        locFilter.addAction(LocationService.ACTION_GPS_UNAVAILABLE)
+        locFilter.addAction(LocationService.ACTION_GPS_RESTORED)
         LocalBroadcastManager.getInstance(activity as AppCompatActivity)
             .registerReceiver(receiver, locFilter)
     }
@@ -594,6 +635,7 @@ class MainFragment : Fragment() {
     }
 
     companion object {
+        private const val LOCATION_PERMISSION_REQUESTED = "location_permission_requested"
         @JvmStatic
         fun newInstance() = MainFragment()
     }

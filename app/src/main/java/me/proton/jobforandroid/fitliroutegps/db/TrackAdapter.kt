@@ -9,6 +9,7 @@ import androidx.recyclerview.widget.RecyclerView
 import me.proton.jobforandroid.fitliroutegps.R
 import me.proton.jobforandroid.fitliroutegps.databinding.TrackItemBinding
 import me.proton.jobforandroid.fitliroutegps.utils.RouteNameFormatter
+import me.proton.jobforandroid.fitliroutegps.utils.SpeedUnitFormatter
 
 class TrackAdapter(val listener: Listener) :
     ListAdapter<TrackItem, TrackAdapter.Holder>(Comparator()) {
@@ -26,7 +27,7 @@ class TrackAdapter(val listener: Listener) :
         fun bind(track: TrackItem) = with(binding) {
             trackTemp = track
             val distance = "${track.distance} km"
-            val velocity = track.speed
+            val velocity = SpeedUnitFormatter.kmh(track.speed, itemView.context.getString(R.string.speed_unit_kmh))
             val time = track.time.substringAfter(':').trim()
             tvName.text = track.name.ifBlank {
                 RouteNameFormatter.defaultName(itemView.context, track.date)

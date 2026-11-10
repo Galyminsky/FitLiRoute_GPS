@@ -1,11 +1,11 @@
 package me.proton.jobforandroid.fitliroutegps.utils
 
-import android.app.AlertDialog
 import android.content.Context
 import android.graphics.Color
 import android.view.LayoutInflater
 import android.view.View
 import com.google.android.material.bottomsheet.BottomSheetDialog
+import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import me.proton.jobforandroid.fitliroutegps.R
 import me.proton.jobforandroid.fitliroutegps.databinding.SaveDialogBinding
 import me.proton.jobforandroid.fitliroutegps.db.TrackItem
@@ -14,26 +14,12 @@ import me.proton.jobforandroid.fitliroutegps.utils.RouteNameFormatter
 object DialogManager {
 
     fun showLocEnabledDialog(context: Context, listener: Listener) {
-        val builder = AlertDialog.Builder(context)
-        val dialog = builder.create()
-        dialog.setTitle(R.string.location_disabled)
-        dialog.setMessage(context.getString(R.string.location_dialog_message))
-        dialog.setButton(
-            AlertDialog.BUTTON_POSITIVE,
-            context.getString(R.string.location_bnt_yes)
-        ) { _, _ ->
-            listener.onClick()
-
-        }
-
-        dialog.setButton(
-            AlertDialog.BUTTON_NEGATIVE,
-            context.getString(R.string.location_bnt_no)
-        ) { _, _ ->
-            dialog.dismiss()
-
-        }
-        dialog.show()
+        MaterialAlertDialogBuilder(context, R.style.ThemeOverlay_FitRoute_ChoiceDialog)
+            .setTitle(R.string.location_disabled)
+            .setMessage(R.string.location_dialog_message)
+            .setPositiveButton(R.string.location_bnt_yes) { _, _ -> listener.onClick() }
+            .setNegativeButton(R.string.location_bnt_no, null)
+            .show()
     }
 
     fun showSaveDialog(context: Context, item: TrackItem, onSave: (String) -> Unit, onCancel: () -> Unit = {}) {
@@ -44,7 +30,7 @@ object DialogManager {
         binding.apply {
 
             val time = item.time.substringAfter(':').trim()
-            val velocity = item.speed.replace("m/s", "km/h")
+            val velocity = SpeedUnitFormatter.kmh(item.speed, context.getString(R.string.speed_unit_kmh))
             val distance = "${item.distance} km"
             val defaultName = RouteNameFormatter.defaultName(context, item.date)
 

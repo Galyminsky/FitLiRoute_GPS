@@ -1,10 +1,20 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
+    <string name="speed_unit_kmh">км/ч</string>
     <string name="map_zoom_in">Увеличить карту</string>
     <string name="map_zoom_out">Уменьшить карту</string>
     <string name="tracking_label">ЗАПИСЬ МАРШРУТА</string>
+    <string name="location_permission_title">Доступ к местоположению</string>
+    <string name="location_permission_disclosure">FITLiROUTE GPS использует точное местоположение для записи пройденного маршрута, расчёта расстояния и скорости.\n\nПосле начала записи приложение продолжает определять местоположение, даже если вы свернули приложение или заблокировали экран.\n\nЗапись начинается только после нажатия START и прекращается после STOP.</string>
+    <string name="location_permission_continue">Продолжить</string>
+    <string name="location_permission_not_now">Не сейчас</string>
+    <string name="location_permission_settings_title">Доступ к местоположению запрещён</string>
+    <string name="location_permission_settings_message">Разрешите доступ к точному местоположению в настройках приложения, чтобы записать маршрут.</string>
+    <string name="location_permission_settings_open">Открыть настройки</string>
     <string name="gps_status_enabled">GPS</string>
     <string name="gps_status_disabled">GPS ВЫКЛ.</string>
+    <string name="gps_recording_unavailable">GPS недоступен. Записанный маршрут сохранён; запись продолжится после восстановления GPS.</string>
+    <string name="gps_recording_restored">GPS доступен. Запись маршрута продолжается.</string>
     <string name="distance_unit">км</string>
     <string name="time_stat_label">Время</string>
     <string name="speed_stat_label">Скорость</string>
@@ -84,4 +94,8 @@
     <string name="waiting_for_gps">Ожидание GPS…</string>
     <string name="show_gps_enabled">GPS включен!</string>
     <string name="show_loc_not_accessed">Нет доступа к местоположению!</string>
+    <string name="draft_read_failed">Не удалось прочитать черновик маршрута. Удалите его, чтобы начать новый маршрут, или отмените действие, чтобы сохранить черновик.</string>
+    <string name="draft_delete">Удалить черновик</string>
+    <string name="show_track_corrupt">Данные маршрута повреждены и не могут быть показаны.</string>
+    <string name="show_draft_cleanup_failed">Маршрут сохранён, но удалить черновик не удалось. Повторите удаление.</string>
 </resources>

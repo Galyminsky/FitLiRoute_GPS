@@ -12,8 +12,8 @@ android {
         applicationId "me.proton.jobforandroid.fitliroutegps"
         minSdk 29
         targetSdk 37
-        versionCode 1
-        versionName "1.0"
+        versionCode 3
+        versionName "2.0"
 
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
     }
@@ -79,7 +79,7 @@ dependencies {
     implementation 'com.google.firebase:firebase-analytics'
 }
 
-tasks.withType(org.gradle.api.tasks.testing.Test).configureEach {
+tasks.withType(Test).configureEach {
     if (name == 'testDebugUnitTest') {
         filter {
             excludeTestsMatching 'me.proton.jobforandroid.fitliroutegps.MainActivityRecreationTest'
