@@ -18,6 +18,7 @@ import me.proton.jobforandroid.fitliroutegps.viewmodel.MainViewModel
 import me.proton.jobforandroid.fitliroutegps.utils.showToast
 import me.proton.jobforandroid.fitliroutegps.utils.RoutePointsParser
 import me.proton.jobforandroid.fitliroutegps.utils.RouteColorPalette
+import me.proton.jobforandroid.fitliroutegps.utils.SpeedUnitFormatter
 import org.osmdroid.config.Configuration
 import org.osmdroid.library.BuildConfig
 import org.osmdroid.util.GeoPoint
@@ -51,7 +52,8 @@ class ViewTrackFragment : Fragment() {
 
     private fun getTrack() = with(binding) {
         model.currentTrack.observe(viewLifecycleOwner) {
-            val speed = resources.getString(R.string.fvt_average_velosity) + it.speed
+            val speed = resources.getString(R.string.fvt_average_velosity) +
+                SpeedUnitFormatter.kmh(it.speed, getString(R.string.speed_unit_kmh))
             val distance = resources.getString(R.string.fvt_distance) + it.distance
             val date = resources.getString(R.string.fvt_date) + it.date
             tvData.text = date

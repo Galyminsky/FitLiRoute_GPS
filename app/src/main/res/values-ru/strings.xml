@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
+    <string name="speed_unit_kmh">км/ч</string>
     <string name="map_zoom_in">Увеличить карту</string>
     <string name="map_zoom_out">Уменьшить карту</string>
     <string name="tracking_label">ЗАПИСЬ МАРШРУТА</string>
@@ -93,4 +94,8 @@
     <string name="waiting_for_gps">Ожидание GPS…</string>
     <string name="show_gps_enabled">GPS включен!</string>
     <string name="show_loc_not_accessed">Нет доступа к местоположению!</string>
+    <string name="draft_read_failed">Не удалось прочитать черновик маршрута. Удалите его, чтобы начать новый маршрут, или отмените действие, чтобы сохранить черновик.</string>
+    <string name="draft_delete">Удалить черновик</string>
+    <string name="show_track_corrupt">Данные маршрута повреждены и не могут быть показаны.</string>
+    <string name="show_draft_cleanup_failed">Маршрут сохранён, но удалить черновик не удалось. Повторите удаление.</string>
 </resources>

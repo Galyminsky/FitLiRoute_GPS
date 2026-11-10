@@ -30,7 +30,7 @@ object DialogManager {
         binding.apply {
 
             val time = item.time.substringAfter(':').trim()
-            val velocity = item.speed.replace("m/s", "km/h")
+            val velocity = SpeedUnitFormatter.kmh(item.speed, context.getString(R.string.speed_unit_kmh))
             val distance = "${item.distance} km"
             val defaultName = RouteNameFormatter.defaultName(context, item.date)
 

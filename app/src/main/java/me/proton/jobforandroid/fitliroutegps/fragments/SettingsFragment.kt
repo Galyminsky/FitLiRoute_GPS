@@ -15,6 +15,7 @@ import me.proton.jobforandroid.fitliroutegps.R
 import me.proton.jobforandroid.fitliroutegps.databinding.DialogLegalDocumentBinding
 import me.proton.jobforandroid.fitliroutegps.databinding.FragmentSettingsBinding
 import me.proton.jobforandroid.fitliroutegps.utils.LegalMarkdownFormatter
+import me.proton.jobforandroid.fitliroutegps.utils.PreferenceValueReader
 import me.proton.jobforandroid.fitliroutegps.utils.RouteColorPalette
 
 class SettingsFragment : PreferenceFragmentCompat() {
@@ -112,7 +113,7 @@ class SettingsFragment : PreferenceFragmentCompat() {
                     pref.icon?.setTint(RouteColorPalette.resolve(requireContext(), value.toString()))
                     val values = resources.getStringArray(R.array.color_value)
                     val names = resources.getStringArray(R.array.color_name)
-                    pref.summary = names[values.indexOf(value.toString())]
+                    pref.summary = names[preferenceIndex(values, value.toString(), "#FA2C2C")]
                 }
             }
             true
@@ -122,20 +123,29 @@ class SettingsFragment : PreferenceFragmentCompat() {
     private fun onTimeChange(value: String) {
         val nameArray = resources.getStringArray(R.array.loc_time_update_name)
         val valueArray = resources.getStringArray(R.array.loc_time_update_value)
-        timePref.summary = nameArray[valueArray.indexOf(value)]
+        timePref.summary = nameArray[preferenceIndex(valueArray, value, "3000")]
     }
 
     private fun initPref() {
         val pref = timePref.preferenceManager.sharedPreferences
         val nameArray = resources.getStringArray(R.array.loc_time_update_name)
         val valueArray = resources.getStringArray(R.array.loc_time_update_value)
-        timePref.summary = nameArray[valueArray.indexOf(pref?.getString("update_time_key", "3000"))]
+        val selectedTime = PreferenceValueReader.read(valueArray, "3000") {
+            pref?.getString("update_time_key", "3000")
+        }
+        timePref.summary = nameArray[preferenceIndex(valueArray, selectedTime, "3000")]
 
-        val trackColor = pref?.getString("color_key", "#FA2C2C")
-        colorPref.icon?.setTint(RouteColorPalette.resolve(requireContext(), trackColor))
         val colorValues = resources.getStringArray(R.array.color_value)
-        colorPref.summary = resources.getStringArray(R.array.color_name)[colorValues.indexOf(trackColor)]
+        val trackColor = PreferenceValueReader.read(colorValues, "#FA2C2C") {
+            pref?.getString("color_key", "#FA2C2C")
+        }
+        colorPref.icon?.setTint(RouteColorPalette.resolve(requireContext(), trackColor))
+        colorPref.summary = resources.getStringArray(R.array.color_name)[preferenceIndex(colorValues, trackColor, "#FA2C2C")]
     }
+
+    private fun preferenceIndex(values: Array<String>, value: String?, default: String): Int =
+        values.indexOfFirst { it == value }.takeIf { it >= 0 }
+            ?: values.indexOf(default).coerceAtLeast(0)
 
     private fun showLegalDocument(name: String, titleId: Int) {
         val language = if (resources.configuration.locales[0].language == "ru") "ru" else "en"

@@ -46,6 +46,7 @@ import me.proton.jobforandroid.fitliroutegps.location.TrackDraftStore
 import me.proton.jobforandroid.fitliroutegps.location.TrackDraftRecovery
 import me.proton.jobforandroid.fitliroutegps.utils.DialogManager
 import me.proton.jobforandroid.fitliroutegps.utils.TimeUtils
+import me.proton.jobforandroid.fitliroutegps.utils.SpeedUnitFormatter
 import me.proton.jobforandroid.fitliroutegps.utils.RouteColorPalette
 import me.proton.jobforandroid.fitliroutegps.utils.checkPermission
 import me.proton.jobforandroid.fitliroutegps.utils.showToast
@@ -155,12 +156,12 @@ class MainFragment : Fragment() {
             val velocityLabel = getString(R.string.velocityLabel)
             val avVelocityLabel = getString(R.string.avVelocityLabel)
             val distance = "$distanceLabel ${String.format("%.1f", it.distance)} m"
-            val velocity = "$velocityLabel ${String.format("%.1f", 3.6 * it.velocity)} km/h"
+            val velocity = "$velocityLabel ${SpeedUnitFormatter.kmh(String.format("%.1f", 3.6 * it.velocity), getString(R.string.speed_unit_kmh))}"
             val avVelocity = "$avVelocityLabel ${getAverageVelocity(it.distance)}"
 
             tvDistance.text = String.format(Locale.getDefault(), "%.2f", it.distance / 1000f)
             tvVelosity.text = velocity.substringAfter(':').trim()
-            tvAveragaVel.text = avVelocity.substringAfter(':').trim().replace("m/s", "km/h")
+            tvAveragaVel.text = avVelocity.substringAfter(':').trim()
             locationModel = it
             updatePolyline(it.geoPointsList)
         }
@@ -194,10 +195,10 @@ class MainFragment : Fragment() {
     }
 
     private fun getAverageVelocity(distance: Float): String {
-        return String.format(
-            "%.1f m/s",
+        return SpeedUnitFormatter.kmh(String.format(
+            "%.1f",
             3.6f * (distance / ((System.currentTimeMillis() - startTime) / 1000.0f))
-        )
+        ), getString(R.string.speed_unit_kmh))
     }
 
     private fun getCurrentTime(elapsedMillis: Long): String {
@@ -372,8 +373,8 @@ class MainFragment : Fragment() {
 
     private fun resetTrackUi() = with(binding) {
         tvDistance.setText(R.string.waiting_for_gps)
-        tvVelosity.text = "0.0 km/h"
-        tvAveragaVel.text = "0.0 m/s"
+        tvVelosity.text = SpeedUnitFormatter.kmh("0.0", getString(R.string.speed_unit_kmh))
+        tvAveragaVel.text = SpeedUnitFormatter.kmh("0.0", getString(R.string.speed_unit_kmh))
         tvTime.text = "00:00:00"
     }
 
@@ -384,7 +385,7 @@ class MainFragment : Fragment() {
             "${getString(R.string.tvTime)} ${TimeUtils.getTime(duration)}",
             java.text.SimpleDateFormat("dd/MM/yyyy HH:mm", Locale.getDefault()).format(Date(draft.updatedAt)),
             String.format("%.1f", draft.distance.div(1000)),
-            String.format("%.1f m/s", 3.6f * (draft.distance / (duration / 1000.0f))),
+            SpeedUnitFormatter.kmh(String.format("%.1f", 3.6f * (draft.distance / (duration / 1000.0f))), getString(R.string.speed_unit_kmh)),
             geoPointsToString(draft.points.map { GeoPoint(it.latitude, it.longitude) }),
         )
     }

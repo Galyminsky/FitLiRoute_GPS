@@ -20,6 +20,7 @@ import android.os.Looper
 import androidx.core.app.ActivityCompat
 import androidx.core.app.NotificationCompat
 import androidx.localbroadcastmanager.content.LocalBroadcastManager
+import androidx.preference.PreferenceManager
 import com.google.android.gms.location.FusedLocationProviderClient
 import com.google.android.gms.location.LocationCallback
 import com.google.android.gms.location.LocationRequest
@@ -279,11 +280,18 @@ class LocationService : Service() {
     }
 
     private fun initLocation() {
-        locRequest = LocationRequest.create()
-        locRequest.interval = 5000
-        locRequest.fastestInterval = 2000
-        locRequest.priority = PRIORITY_HIGH_ACCURACY
         locProvider = LocationServices.getFusedLocationProviderClient(baseContext)
+    }
+
+    private fun createLocationRequest(): LocationRequest {
+        val preferences = PreferenceManager.getDefaultSharedPreferences(this)
+        val selected = try { preferences.getString("update_time_key", null) }
+            catch (_: ClassCastException) { null }
+        return LocationRequest.create().apply {
+            interval = GpsIntervalPolicy.fromPreference(selected)
+            fastestInterval = 2000
+            priority = PRIORITY_HIGH_ACCURACY
+        }
     }
 
     private fun canUseGps(): Boolean =
@@ -298,11 +306,19 @@ class LocationService : Service() {
         }
         registrationPending = true
         return try {
+            locRequest = createLocationRequest()
             val success = suspendCancellableCoroutine<Boolean> { continuation ->
                 try {
+                    if (ActivityCompat.checkSelfPermission(this@LocationService, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED &&
+                        ActivityCompat.checkSelfPermission(this@LocationService, Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
+                        if (continuation.isActive) continuation.resume(false)
+                        return@suspendCancellableCoroutine
+                    }
                     locProvider.requestLocationUpdates(locRequest, locCallBack, Looper.getMainLooper())
                         .addOnSuccessListener { if (continuation.isActive) continuation.resume(true) }
                         .addOnFailureListener { if (continuation.isActive) continuation.resume(false) }
+                } catch (_: SecurityException) {
+                    if (continuation.isActive) continuation.resume(false)
                 } catch (_: Exception) {
                     if (continuation.isActive) continuation.resume(false)
                 }
